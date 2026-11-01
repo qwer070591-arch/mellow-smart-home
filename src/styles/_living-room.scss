@@ -1,0 +1,209 @@
+.living-experience {
+  min-width: 0;
+}
+.room-stage {
+  position: relative;
+  height: clamp(320px, 55vw, 450px);
+  overflow: hidden;
+  border-radius: 20px;
+  background: #171b20;
+  border: 1px solid rgba(220, 243, 255, 0.3);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.29), inset 0 1px rgba(255, 255, 255, 0.14);
+}
+.scene-photo-frame,
+.scene-photo-state,
+.scene-photo,
+.scene-ambient-shade,
+.scene-cool-tone {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.scene-photo {
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+}
+.scene-photo-state-lit {
+  transition: opacity 380ms ease;
+}
+.scene-ambient-shade {
+  background: linear-gradient(110deg, rgba(5, 11, 20, 0.87), rgba(8, 10, 16, 0.95));
+  pointer-events: none;
+  transition: opacity 380ms ease;
+}
+.scene-cool-tone {
+  background: radial-gradient(ellipse 70% 105% at 88% 40%, rgba(167, 208, 255, 0.75), transparent 90%);
+  mix-blend-mode: color;
+  pointer-events: none;
+  transition: opacity 380ms ease;
+}
+.room-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0 0 auto;
+  height: 35%;
+  background: linear-gradient(rgba(15, 18, 15, 0.48), transparent);
+  pointer-events: none;
+}
+.stage-heading {
+  position: absolute;
+  z-index: 2;
+  top: 22px;
+  right: 24px;
+  left: 24px;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+}
+.stage-heading span:first-child {
+  font-size: 0.75rem;
+}
+.stage-heading h1 {
+  margin-top: 2px;
+  color: #fff;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+}
+.scene-atmosphere {
+  margin-top: 27px;
+}
+.atmosphere-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.atmosphere-heading span {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.atmosphere-heading h2 {
+  order: -1;
+  font-size: 1.55rem;
+}
+.room-control-panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 20px;
+  padding: 0 19px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(140deg, rgba(218, 244, 255, 0.11), rgba(218, 244, 255, 0.035) 55%, rgba(178, 217, 231, 0.07));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13), 0 16px 38px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(24px) saturate(140%);
+}
+.room-control {
+  min-width: 0;
+  padding: 18px 0 20px;
+}
+.room-control + .room-control {
+  border-top: 1px solid var(--line);
+}
+.room-control-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 15px;
+}
+.room-control-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--sage-soft);
+  color: var(--sage);
+}
+.room-control-heading > div {
+  flex: 1;
+  min-width: 0;
+}
+.room-control-heading strong,
+.room-control-heading small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.room-control-heading strong {
+  font-size: 0.94rem;
+}
+.room-control-heading small {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.room-control-heading output {
+  font: 1.55rem var(--font-display);
+  white-space: nowrap;
+}
+.room-control > label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.room-control input[type="range"] {
+  display: block;
+  width: 100%;
+  height: 30px;
+  margin: 0;
+  accent-color: var(--sage);
+}
+.room-control input[type="range"]:disabled {
+  cursor: not-allowed;
+}
+.control-endpoints {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.temperature-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 9px;
+  margin-top: 11px;
+  font-size: 0.77rem;
+}
+.temperature-row label {
+  color: var(--muted);
+}
+.temperature-row strong {
+  color: var(--sage);
+  font-weight: 500;
+}
+.room-control-heading .switch {
+  margin-left: 0;
+}
+
+@media (min-width: 701px) {
+  .room-control-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .room-control + .room-control {
+    border-top: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .room-stage {
+    height: 260px;
+  }
+  .stage-heading {
+    top: 13px;
+    right: 16px;
+    left: 16px;
+  }
+  .stage-heading h1 {
+    font-size: 2rem;
+  }
+  .room-control-panel {
+    margin-top: 16px;
+    padding-inline: 15px;
+  }
+  .scene-atmosphere {
+    margin-top: 22px;
+  }
+}

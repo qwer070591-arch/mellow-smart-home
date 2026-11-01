@@ -1,0 +1,116 @@
+.living-intro {
+  margin-bottom: 15px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+.living-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+.living-layout .climate-section {
+  min-width: 0;
+}
+.overview-view .trend-card {
+  margin-top: 40px;
+}
+.insight-card {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(223, 246, 255, 0.15), rgba(223, 246, 255, 0.04) 65%);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.17), 0 16px 38px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(24px) saturate(140%);
+}
+.insight-card .section-heading h2 {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1.38rem;
+  letter-spacing: 0;
+}
+.metric-tabs {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+}
+.metric-tabs button {
+  min-height: 34px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.metric-tabs button[aria-pressed="true"] {
+  background: var(--sage-soft);
+  color: var(--sage-dark);
+  font-weight: 600;
+}
+.trend-current {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-top: 20px;
+}
+.trend-current strong {
+  font: 2.9rem/1 var(--font-display);
+  letter-spacing: -0.05em;
+}
+.trend-current > span {
+  color: var(--sage-dark);
+  font-size: 1rem;
+}
+.trend-current small {
+  margin-left: 12px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.trend-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 5px;
+  overflow: visible;
+}
+.trend-grid {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 4 5;
+}
+.trend-line {
+  fill: none;
+  stroke: var(--sage);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.trend-point {
+  fill: var(--surface);
+  stroke: var(--sage);
+  stroke-width: 2;
+}
+.trend-chart text {
+  fill: var(--muted);
+  font: 15px ui-sans-serif, sans-serif;
+}
+.trend-note {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+@media (max-width: 700px) {
+  .overview-view .trend-card {
+    margin-top: 28px;
+  }
+  .insight-card {
+    padding: 20px 16px;
+  }
+  .insight-card .section-heading {
+    flex-wrap: wrap;
+  }
+}

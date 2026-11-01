@@ -1,0 +1,118 @@
+:root {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color-scheme: light;
+  --bg: #f8f7f3;
+  --surface: #fffefa;
+  --surface-soft: #f1f2eb;
+  --ink: #25332e;
+  --muted: #7d8981;
+  --line: #e7e9e2;
+  --sage: #778e79;
+  --sage-dark: #536f5a;
+  --sage-soft: #e9eee6;
+  --cream: #f7e9cf;
+  --peach: #f6dfcb;
+  --hero: #dce8dc;
+  --hero-deep: #bad1bc;
+  --white: #fff;
+  --danger: #a34c41;
+  --shadow: 0 12px 36px rgba(39, 55, 44, 0.045);
+  --overlay: rgba(17, 27, 19, 0.48);
+  --font-display: Georgia, "Times New Roman", serif;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171f1c;
+  --surface: #222c27;
+  --surface-soft: #2b3930;
+  --ink: #f0f3ed;
+  --muted: #a7b4a8;
+  --line: #3a4a3e;
+  --sage: #9cbaa0;
+  --sage-dark: #a8c7aa;
+  --sage-soft: #35473a;
+  --cream: #544c3d;
+  --peach: #53453b;
+  --hero: #354b3b;
+  --hero-deep: #4c6b50;
+  --white: #f5f8f2;
+  --danger: #e6a198;
+  --shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+  overflow-x: clip;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+a,
+input,
+select {
+  outline-offset: 3px;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--sage-dark);
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+h1 {
+  font-size: clamp(2.35rem, 4vw, 3.5rem);
+  overflow-wrap: break-word;
+}
+h2 {
+  font-size: clamp(1.6rem, 2.5vw, 2.05rem);
+}
+h3 {
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+small {
+  font-size: 0.8rem;
+}
