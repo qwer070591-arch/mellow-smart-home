@@ -2,9 +2,9 @@ import { test, expect } from "@playwright/test";
 
 const base = "http://127.0.0.1:5180";
 const leftCurtainEdgeAt = (position: number) =>
-  `${Number((23.5 - 16.5 * (position / 100)).toFixed(2))}%`;
+  `${Number((26.3 - 21.3 * Math.pow(position / 100, 1.6)).toFixed(2))}%`;
 const rightCurtainEdgeAt = (position: number) =>
-  `${Number((23.5 + 18.5 * (position / 100)).toFixed(2))}%`;
+  `${Number((26.3 + 23.7 * Math.pow(position / 100, 1.6)).toFixed(2))}%`;
 
 test.beforeEach(async ({ page }) => {
   await page.goto(base);
@@ -32,6 +32,7 @@ test("首頁與鬧鐘操作沒有瀏覽器執行錯誤", async ({ page }) => {
 });
 
 test("窗簾由中央向左右拉開且不影響室內照明", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   const slider = page.locator("#living-curtain-position");
   const sources = await page.locator(".scene-photo").evaluateAll((images) =>
     images.map((image) => (image as HTMLImageElement).currentSrc),
@@ -65,7 +66,7 @@ test("窗簾由中央向左右拉開且不影響室內照明", async ({ page }) 
       "--curtain-right-edge", rightCurtainEdgeAt(position),
     );
     await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", shade);
-    const outdoorOpacity = Number((position / 100 * (0.95 - 0.75 * Math.pow(0.8, 1.12))).toFixed(3));
+    const outdoorOpacity = Number((position / 100 * (0.55 - 0.45 * Math.pow(0.8, 1.12))).toFixed(3));
     await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", String(outdoorOpacity));
     await page.locator(".room-stage").screenshot({
       path: `output/playwright/curtain-${position}.png`,
@@ -130,8 +131,8 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0.2");
   await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", "0");
   await expect(page.getByTestId("curtain-opening")).toHaveCSS("opacity", "0");
-  await expect(page.getByTestId("curtain-opening")).toHaveCSS("--curtain-left-edge", "23.5%");
-  await expect(page.getByTestId("curtain-opening")).toHaveCSS("--curtain-right-edge", "23.5%");
+  await expect(page.getByTestId("curtain-opening")).toHaveCSS("--curtain-left-edge", "26.3%");
+  await expect(page.getByTestId("curtain-opening")).toHaveCSS("--curtain-right-edge", "26.3%");
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-closed-390.png" });
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("End");
@@ -142,14 +143,14 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.locator("#living-curtain-position").focus();
   await page.keyboard.press("End");
   await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0");
-  await expect(page.getByTestId("curtain-opening")).toHaveCSS("--curtain-left-edge", "7%");
-  await expect(page.getByTestId("curtain-opening")).toHaveCSS("--curtain-right-edge", "42%");
+  await expect(page.getByTestId("curtain-opening")).toHaveCSS("--curtain-left-edge", "5%");
+  await expect(page.getByTestId("curtain-opening")).toHaveCSS("--curtain-right-edge", "50%");
   await expect(page.getByTestId("curtain-opening")).toHaveCSS("opacity", "1");
-  await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", "0.2");
+  await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", "0.1");
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("Home");
   await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0.2");
-  await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", "0.95");
+  await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", "0.55");
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-open-dark-390.png" });
   await page.keyboard.press("End");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "1");

@@ -9,10 +9,10 @@ import {
   DoorOpen,
 } from "@lucide/vue";
 import { useHomeStore } from "../stores/home";
-import openOffPhoto from "../assets/living-room-night-open-off.webp";
-import closedOffPhoto from "../assets/living-room-night-closed-off.webp";
-import openLitPhoto from "../assets/living-room-night-open-lit.webp";
-import closedLitPhoto from "../assets/living-room-night-closed-lit.webp";
+import openOffPhoto from "../assets/living-room-window-open-off.webp";
+import closedOffPhoto from "../assets/living-room-window-closed-off.webp";
+import openLitPhoto from "../assets/living-room-window-open-lit.webp";
+import closedLitPhoto from "../assets/living-room-window-closed-lit.webp";
 
 const store = useHomeStore();
 const lamp = computed(() => store.state.lamp);
@@ -20,15 +20,16 @@ const curtainPosition = computed(() => store.state.curtain.position);
 const brightness = computed(() => (lamp.value.on ? lamp.value.brightness : 0));
 const lampLevel = computed(() => Math.pow(brightness.value / 100, 1.12));
 const curtainOpen = computed(() => curtainPosition.value / 100);
+const curtainReveal = computed(() => Math.pow(curtainOpen.value, 1.6));
 // Reveal only the growing gap between two curtains; the closed room stays the base image.
-const leftCurtainEdge = computed(() => `${(23.5 - 16.5 * curtainOpen.value).toFixed(2)}%`);
-const rightCurtainEdge = computed(() => `${(23.5 + 18.5 * curtainOpen.value).toFixed(2)}%`);
+const leftCurtainEdge = computed(() => `${(26.3 - 21.3 * curtainReveal.value).toFixed(2)}%`);
+const rightCurtainEdge = computed(() => `${(26.3 + 23.7 * curtainReveal.value).toFixed(2)}%`);
 const openingOpacity = computed(() => Math.min(curtainPosition.value / 5, 1));
 const ambientShade = computed(() =>
   Number(((1 - lampLevel.value) * 0.2).toFixed(3)),
 );
 const outdoorLight = computed(() =>
-  Number((curtainOpen.value * (0.95 - 0.75 * lampLevel.value)).toFixed(3)),
+  Number((curtainOpen.value * (0.55 - 0.45 * lampLevel.value)).toFixed(3)),
 );
 const coolTone = computed(() =>
   Number(

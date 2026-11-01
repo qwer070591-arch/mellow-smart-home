@@ -1,12 +1,12 @@
 @property --curtain-left-edge {
   syntax: "<percentage>";
   inherits: false;
-  initial-value: 23.5%;
+  initial-value: 26.3%;
 }
 @property --curtain-right-edge {
   syntax: "<percentage>";
   inherits: false;
-  initial-value: 23.5%;
+  initial-value: 26.3%;
 }
 
 .living-experience {
@@ -14,7 +14,7 @@
 }
 .room-stage {
   position: relative;
-  height: clamp(320px, 55vw, 450px);
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 20px;
   background: #171b20;
@@ -39,8 +39,8 @@
   object-position: center center;
 }
 .scene-curtain-zone {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 54%, transparent 56%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 54%, transparent 56%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 6%, #000 9%, #000 43%, transparent 47%);
+  mask-image: linear-gradient(to bottom, transparent 6%, #000 9%, #000 43%, transparent 47%);
 }
 .scene-photo-curtain-opening {
   transition: --curtain-left-edge 280ms ease-out, --curtain-right-edge 280ms ease-out, opacity 120ms ease-out;
@@ -226,9 +226,6 @@
 }
 
 @media (max-width: 700px) {
-  .room-stage {
-    height: 260px;
-  }
   .stage-heading {
     top: 13px;
     right: 16px;
