@@ -20,13 +20,11 @@ const curtainPosition = computed(() => store.state.curtain.position);
 const brightness = computed(() => (lamp.value.on ? lamp.value.brightness : 0));
 const lampLevel = computed(() => Math.pow(brightness.value / 100, 1.12));
 const curtainOpen = computed(() => curtainPosition.value / 100);
-// Reveal the open window with a moving, feathered curtain edge rather than
-// fading whole photos and making the curtain look translucent.
-const curtainEdge = computed(() => `${(42 - 47 * curtainOpen.value).toFixed(2)}%`);
+// Two opaque curtain panels move away from the middle of the window.
+const leftCurtainEdge = computed(() => `${(25.5 - 17.5 * curtainOpen.value).toFixed(2)}%`);
+const rightCurtainEdge = computed(() => `${(21.5 + 18.5 * curtainOpen.value).toFixed(2)}%`);
 const ambientShade = computed(() =>
-  Number(
-    ((1 - lampLevel.value) * (0.2 + (1 - curtainOpen.value) * 0.12)).toFixed(3),
-  ),
+  Number(((1 - lampLevel.value) * 0.2).toFixed(3)),
 );
 const coolTone = computed(() =>
   Number(
@@ -64,14 +62,22 @@ const sceneLabel = computed(
       <div class="scene-photo-frame" role="img" :aria-label="sceneLabel">
         <div class="scene-photo-state">
           <img class="scene-photo" :src="openOffPhoto" alt="" />
-          <img class="scene-photo scene-photo-curtain-layer" :src="closedOffPhoto" alt=""
-            data-testid="curtain-transition" :style="{ '--curtain-edge': curtainEdge }" />
+          <div class="scene-curtain-zone">
+            <img class="scene-photo scene-photo-curtain-left" :src="closedOffPhoto" alt=""
+              data-testid="curtain-left" :style="{ '--curtain-left-edge': leftCurtainEdge }" />
+            <img class="scene-photo scene-photo-curtain-right" :src="closedOffPhoto" alt=""
+              data-testid="curtain-right" :style="{ '--curtain-right-edge': rightCurtainEdge }" />
+          </div>
         </div>
         <div class="scene-photo-state scene-photo-state-lit" data-testid="lamp-lit-room"
           :style="{ opacity: lampLevel }">
           <img class="scene-photo" :src="openLitPhoto" alt="" />
-          <img class="scene-photo scene-photo-curtain-layer" :src="closedLitPhoto" alt=""
-            :style="{ '--curtain-edge': curtainEdge }" />
+          <div class="scene-curtain-zone">
+            <img class="scene-photo scene-photo-curtain-left" :src="closedLitPhoto" alt=""
+              :style="{ '--curtain-left-edge': leftCurtainEdge }" />
+            <img class="scene-photo scene-photo-curtain-right" :src="closedLitPhoto" alt=""
+              :style="{ '--curtain-right-edge': rightCurtainEdge }" />
+          </div>
         </div>
         <div
           class="scene-ambient-shade"

@@ -1,8 +1,10 @@
 import { test, expect } from "@playwright/test";
 
 const base = "http://127.0.0.1:5180";
-const curtainEdgeAt = (position: number) =>
-  `${Number((42 - 0.47 * position).toFixed(2))}%`;
+const leftCurtainEdgeAt = (position: number) =>
+  `${Number((25.5 - 17.5 * (position / 100)).toFixed(2))}%`;
+const rightCurtainEdgeAt = (position: number) =>
+  `${Number((21.5 + 18.5 * (position / 100)).toFixed(2))}%`;
 
 test.beforeEach(async ({ page }) => {
   await page.goto(base);
@@ -18,7 +20,7 @@ test("首頁與鬧鐘操作沒有瀏覽器執行錯誤", async ({ page }) => {
     if (message.type() === "error") errors.push(message.text());
   });
   await page.reload();
-  await expect(page.locator(".scene-photo")).toHaveCount(4);
+  await expect(page.locator(".scene-photo")).toHaveCount(6);
   await expect.poll(() => page.locator(".scene-photo").evaluateAll((images) =>
     images.every((image) => (image as HTMLImageElement).naturalWidth > 0),
   )).toBe(true);
@@ -29,7 +31,7 @@ test("首頁與鬧鐘操作沒有瀏覽器執行錯誤", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("窗簾拖曳時遮罩連續移動且不更換照片來源", async ({ page }) => {
+test("窗簾由中央向左右拉開且不影響室內照明", async ({ page }) => {
   const slider = page.locator("#living-curtain-position");
   const sources = await page.locator(".scene-photo").evaluateAll((images) =>
     images.map((image) => (image as HTMLImageElement).currentSrc),
@@ -40,21 +42,29 @@ test("窗簾拖曳時遮罩連續移動且不更換照片來源", async ({ page 
       input.dispatchEvent(new Event("input", { bubbles: true }));
     }, position);
     await expect(slider).toHaveValue(String(position));
-    await expect(page.getByTestId("curtain-transition")).toHaveCSS(
-      "--curtain-edge", curtainEdgeAt(position),
+    await expect(page.getByTestId("curtain-left")).toHaveCSS(
+      "--curtain-left-edge", leftCurtainEdgeAt(position),
+    );
+    await expect(page.getByTestId("curtain-right")).toHaveCSS(
+      "--curtain-right-edge", rightCurtainEdgeAt(position),
     );
   }
   expect(await page.locator(".scene-photo").evaluateAll((images) =>
     images.map((image) => (image as HTMLImageElement).currentSrc),
   )).toEqual(sources);
+  const shade = await page.getByTestId("ambient-shade").evaluate((element) => getComputedStyle(element).opacity);
   for (const position of [0, 25, 50, 75, 100]) {
     await slider.evaluate((input, value) => {
       (input as HTMLInputElement).value = String(value);
       input.dispatchEvent(new Event("input", { bubbles: true }));
     }, position);
-    await expect(page.getByTestId("curtain-transition")).toHaveCSS(
-      "--curtain-edge", curtainEdgeAt(position),
+    await expect(page.getByTestId("curtain-left")).toHaveCSS(
+      "--curtain-left-edge", leftCurtainEdgeAt(position),
     );
+    await expect(page.getByTestId("curtain-right")).toHaveCSS(
+      "--curtain-right-edge", rightCurtainEdgeAt(position),
+    );
+    await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", shade);
     await page.locator(".room-stage").screenshot({
       path: `output/playwright/curtain-${position}.png`,
     });
@@ -65,7 +75,7 @@ test("客廳場景、室內溫度與趨勢都在裝置控制", async ({ page }) 
   await expect(page.getByRole("heading", { name: "裝置總覽" })).toHaveCount(0);
   await expect(page.getByText("日照示意")).toHaveCount(0);
   await expect(page.locator(".room-stage")).toBeVisible();
-  await expect(page.locator(".scene-photo")).toHaveCount(4);
+  await expect(page.locator(".scene-photo")).toHaveCount(6);
   expect(await page.locator(".scene-photo").first().evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await expect(page.getByRole("button", { name: "開啟鬧鐘與排程" })).toBeVisible();
   await expect(page.getByText("裝置控制")).toHaveCount(0);
@@ -115,8 +125,9 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await expect(page.locator("#living-color-temp")).toHaveValue("6500");
   await page.locator("#living-curtain-position").focus();
   await page.keyboard.press("Home");
-  await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0.32");
-  await expect(page.getByTestId("curtain-transition")).toHaveCSS("--curtain-edge", "42%");
+  await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0.2");
+  await expect(page.getByTestId("curtain-left")).toHaveCSS("--curtain-left-edge", "25.5%");
+  await expect(page.getByTestId("curtain-right")).toHaveCSS("--curtain-right-edge", "21.5%");
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-closed-390.png" });
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("End");
@@ -127,7 +138,8 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.locator("#living-curtain-position").focus();
   await page.keyboard.press("End");
   await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0");
-  await expect(page.getByTestId("curtain-transition")).toHaveCSS("--curtain-edge", "-5%");
+  await expect(page.getByTestId("curtain-left")).toHaveCSS("--curtain-left-edge", "8%");
+  await expect(page.getByTestId("curtain-right")).toHaveCSS("--curtain-right-edge", "40%");
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("Home");
   await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0.2");
