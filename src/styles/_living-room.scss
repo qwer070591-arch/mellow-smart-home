@@ -26,6 +26,7 @@
 .scene-curtain-zone,
 .scene-photo,
 .scene-ambient-shade,
+.scene-outdoor-light,
 .scene-cool-tone {
   position: absolute;
   inset: 0;
@@ -68,6 +69,14 @@
 }
 .scene-ambient-shade {
   background: linear-gradient(110deg, rgba(5, 11, 20, 0.87), rgba(8, 10, 16, 0.95));
+  pointer-events: none;
+  transition: opacity 380ms ease;
+}
+.scene-outdoor-light {
+  background:
+    radial-gradient(ellipse 32% 40% at 25% 42%, rgba(169, 204, 239, 0.29), transparent 84%),
+    radial-gradient(ellipse 42% 31% at 32% 78%, rgba(154, 190, 226, 0.2), transparent 87%);
+  mix-blend-mode: screen;
   pointer-events: none;
   transition: opacity 380ms ease;
 }

@@ -26,6 +26,9 @@ const rightCurtainEdge = computed(() => `${(21.5 + 18.5 * curtainOpen.value).toF
 const ambientShade = computed(() =>
   Number(((1 - lampLevel.value) * 0.2).toFixed(3)),
 );
+const outdoorLight = computed(() =>
+  Number((curtainOpen.value * (0.95 - 0.75 * lampLevel.value)).toFixed(3)),
+);
 const coolTone = computed(() =>
   Number(
     (((lamp.value.colorTemp - 2700) / 3800) * lampLevel.value * 0.55).toFixed(3),
@@ -83,6 +86,11 @@ const sceneLabel = computed(
           class="scene-ambient-shade"
           data-testid="ambient-shade"
           :style="{ opacity: ambientShade }"
+        ></div>
+        <div
+          class="scene-outdoor-light"
+          data-testid="outdoor-light"
+          :style="{ opacity: outdoorLight }"
         ></div>
         <div
           class="scene-cool-tone"

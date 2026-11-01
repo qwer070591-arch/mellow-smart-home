@@ -65,6 +65,8 @@ test("窗簾由中央向左右拉開且不影響室內照明", async ({ page }) 
       "--curtain-right-edge", rightCurtainEdgeAt(position),
     );
     await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", shade);
+    const outdoorOpacity = Number((position / 100 * (0.95 - 0.75 * Math.pow(0.8, 1.12))).toFixed(3));
+    await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", String(outdoorOpacity));
     await page.locator(".room-stage").screenshot({
       path: `output/playwright/curtain-${position}.png`,
     });
@@ -126,6 +128,7 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.locator("#living-curtain-position").focus();
   await page.keyboard.press("Home");
   await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0.2");
+  await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", "0");
   await expect(page.getByTestId("curtain-left")).toHaveCSS("--curtain-left-edge", "25.5%");
   await expect(page.getByTestId("curtain-right")).toHaveCSS("--curtain-right-edge", "21.5%");
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-closed-390.png" });
@@ -140,9 +143,11 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0");
   await expect(page.getByTestId("curtain-left")).toHaveCSS("--curtain-left-edge", "8%");
   await expect(page.getByTestId("curtain-right")).toHaveCSS("--curtain-right-edge", "40%");
+  await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", "0.2");
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("Home");
   await expect(page.getByTestId("ambient-shade")).toHaveCSS("opacity", "0.2");
+  await expect(page.getByTestId("outdoor-light")).toHaveCSS("opacity", "0.95");
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-open-dark-390.png" });
   await page.keyboard.press("End");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "1");
