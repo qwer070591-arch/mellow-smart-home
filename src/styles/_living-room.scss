@@ -1,3 +1,9 @@
+@property --curtain-edge {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 42%;
+}
+
 .living-experience {
   min-width: 0;
 }
@@ -24,6 +30,15 @@
   display: block;
   object-fit: cover;
   object-position: center center;
+}
+.scene-photo-curtain-layer {
+  transition: --curtain-edge 280ms ease-out;
+  -webkit-mask-image: linear-gradient(to right,
+    #000 calc(var(--curtain-edge) - 3%),
+    transparent calc(var(--curtain-edge) + 3%));
+  mask-image: linear-gradient(to right,
+    #000 calc(var(--curtain-edge) - 3%),
+    transparent calc(var(--curtain-edge) + 3%));
 }
 .scene-photo-state-lit {
   transition: opacity 380ms ease;

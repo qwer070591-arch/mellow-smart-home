@@ -13,14 +13,6 @@ import openOffPhoto from "../assets/living-room-night-open-off.webp";
 import closedOffPhoto from "../assets/living-room-night-closed-off.webp";
 import openLitPhoto from "../assets/living-room-night-open-lit.webp";
 import closedLitPhoto from "../assets/living-room-night-closed-lit.webp";
-import halfOffPhoto from "../assets/living-room-night-half-off.webp";
-import halfLitPhoto from "../assets/living-room-night-half-lit.webp";
-
-const photoStates = [
-  { off: closedOffPhoto, lit: closedLitPhoto },
-  { off: halfOffPhoto, lit: halfLitPhoto },
-  { off: openOffPhoto, lit: openLitPhoto },
-] as const;
 
 const store = useHomeStore();
 const lamp = computed(() => store.state.lamp);
@@ -28,14 +20,9 @@ const curtainPosition = computed(() => store.state.curtain.position);
 const brightness = computed(() => (lamp.value.on ? lamp.value.brightness : 0));
 const lampLevel = computed(() => Math.pow(brightness.value / 100, 1.12));
 const curtainOpen = computed(() => curtainPosition.value / 100);
-const curtainFrames = computed(() => {
-  const lower = curtainPosition.value < 50 ? 0 : 1;
-  return {
-    from: photoStates[lower]!,
-    to: photoStates[lower + 1]!,
-    mix: (curtainPosition.value - lower * 50) / 50,
-  };
-});
+// Reveal the open window with a moving, feathered curtain edge rather than
+// fading whole photos and making the curtain look translucent.
+const curtainEdge = computed(() => `${(42 - 47 * curtainOpen.value).toFixed(2)}%`);
 const ambientShade = computed(() =>
   Number(
     ((1 - lampLevel.value) * (0.2 + (1 - curtainOpen.value) * 0.12)).toFixed(3),
@@ -76,15 +63,15 @@ const sceneLabel = computed(
       </div>
       <div class="scene-photo-frame" role="img" :aria-label="sceneLabel">
         <div class="scene-photo-state">
-          <img class="scene-photo" :src="curtainFrames.from.off" alt="" />
-          <img class="scene-photo" :src="curtainFrames.to.off" alt=""
-            data-testid="curtain-transition" :style="{ opacity: curtainFrames.mix }" />
+          <img class="scene-photo" :src="openOffPhoto" alt="" />
+          <img class="scene-photo scene-photo-curtain-layer" :src="closedOffPhoto" alt=""
+            data-testid="curtain-transition" :style="{ '--curtain-edge': curtainEdge }" />
         </div>
         <div class="scene-photo-state scene-photo-state-lit" data-testid="lamp-lit-room"
           :style="{ opacity: lampLevel }">
-          <img class="scene-photo" :src="curtainFrames.from.lit" alt="" />
-          <img class="scene-photo" :src="curtainFrames.to.lit" alt=""
-            :style="{ opacity: curtainFrames.mix }" />
+          <img class="scene-photo" :src="openLitPhoto" alt="" />
+          <img class="scene-photo scene-photo-curtain-layer" :src="closedLitPhoto" alt=""
+            :style="{ '--curtain-edge': curtainEdge }" />
         </div>
         <div
           class="scene-ambient-shade"
