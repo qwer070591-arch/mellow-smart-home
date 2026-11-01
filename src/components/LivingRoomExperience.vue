@@ -20,9 +20,10 @@ const curtainPosition = computed(() => store.state.curtain.position);
 const brightness = computed(() => (lamp.value.on ? lamp.value.brightness : 0));
 const lampLevel = computed(() => Math.pow(brightness.value / 100, 1.12));
 const curtainOpen = computed(() => curtainPosition.value / 100);
-// Two opaque curtain panels move away from the middle of the window.
-const leftCurtainEdge = computed(() => `${(25.5 - 17.5 * curtainOpen.value).toFixed(2)}%`);
-const rightCurtainEdge = computed(() => `${(21.5 + 18.5 * curtainOpen.value).toFixed(2)}%`);
+// Reveal only the growing gap between two curtains; the closed room stays the base image.
+const leftCurtainEdge = computed(() => `${(23.5 - 16.5 * curtainOpen.value).toFixed(2)}%`);
+const rightCurtainEdge = computed(() => `${(23.5 + 18.5 * curtainOpen.value).toFixed(2)}%`);
+const openingOpacity = computed(() => Math.min(curtainPosition.value / 5, 1));
 const ambientShade = computed(() =>
   Number(((1 - lampLevel.value) * 0.2).toFixed(3)),
 );
@@ -64,22 +65,19 @@ const sceneLabel = computed(
       </div>
       <div class="scene-photo-frame" role="img" :aria-label="sceneLabel">
         <div class="scene-photo-state">
-          <img class="scene-photo" :src="openOffPhoto" alt="" />
+          <img class="scene-photo" :src="closedOffPhoto" alt="" />
           <div class="scene-curtain-zone">
-            <img class="scene-photo scene-photo-curtain-left" :src="closedOffPhoto" alt=""
-              data-testid="curtain-left" :style="{ '--curtain-left-edge': leftCurtainEdge }" />
-            <img class="scene-photo scene-photo-curtain-right" :src="closedOffPhoto" alt=""
-              data-testid="curtain-right" :style="{ '--curtain-right-edge': rightCurtainEdge }" />
+            <img class="scene-photo scene-photo-curtain-opening" :src="openOffPhoto" alt=""
+              data-testid="curtain-opening"
+              :style="{ '--curtain-left-edge': leftCurtainEdge, '--curtain-right-edge': rightCurtainEdge, opacity: openingOpacity }" />
           </div>
         </div>
         <div class="scene-photo-state scene-photo-state-lit" data-testid="lamp-lit-room"
           :style="{ opacity: lampLevel }">
-          <img class="scene-photo" :src="openLitPhoto" alt="" />
+          <img class="scene-photo" :src="closedLitPhoto" alt="" />
           <div class="scene-curtain-zone">
-            <img class="scene-photo scene-photo-curtain-left" :src="closedLitPhoto" alt=""
-              :style="{ '--curtain-left-edge': leftCurtainEdge }" />
-            <img class="scene-photo scene-photo-curtain-right" :src="closedLitPhoto" alt=""
-              :style="{ '--curtain-right-edge': rightCurtainEdge }" />
+            <img class="scene-photo scene-photo-curtain-opening" :src="openLitPhoto" alt=""
+              :style="{ '--curtain-left-edge': leftCurtainEdge, '--curtain-right-edge': rightCurtainEdge, opacity: openingOpacity }" />
           </div>
         </div>
         <div

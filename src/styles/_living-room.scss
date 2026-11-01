@@ -1,12 +1,12 @@
 @property --curtain-left-edge {
   syntax: "<percentage>";
   inherits: false;
-  initial-value: 25.5%;
+  initial-value: 23.5%;
 }
 @property --curtain-right-edge {
   syntax: "<percentage>";
   inherits: false;
-  initial-value: 21.5%;
+  initial-value: 23.5%;
 }
 
 .living-experience {
@@ -39,30 +39,21 @@
   object-position: center center;
 }
 .scene-curtain-zone {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 46%, transparent 59%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 46%, transparent 59%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 54%, transparent 56%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 54%, transparent 56%);
 }
-.scene-photo-curtain-left {
-  transition: --curtain-left-edge 280ms ease-out;
+.scene-photo-curtain-opening {
+  transition: --curtain-left-edge 280ms ease-out, --curtain-right-edge 280ms ease-out, opacity 120ms ease-out;
   -webkit-mask-image: linear-gradient(to right,
-    transparent 7%, #000 10%,
-    #000 calc(var(--curtain-left-edge) - 1.5%),
-    transparent calc(var(--curtain-left-edge) + 1.5%));
+    transparent calc(var(--curtain-left-edge) - 1.5%),
+    #000 calc(var(--curtain-left-edge) + 1.5%),
+    #000 calc(var(--curtain-right-edge) - 1.5%),
+    transparent calc(var(--curtain-right-edge) + 1.5%));
   mask-image: linear-gradient(to right,
-    transparent 7%, #000 10%,
-    #000 calc(var(--curtain-left-edge) - 1.5%),
-    transparent calc(var(--curtain-left-edge) + 1.5%));
-}
-.scene-photo-curtain-right {
-  transition: --curtain-right-edge 280ms ease-out;
-  -webkit-mask-image: linear-gradient(to right,
-    transparent calc(var(--curtain-right-edge) - 1.5%),
-    #000 calc(var(--curtain-right-edge) + 1.5%),
-    #000 39%, transparent 42%);
-  mask-image: linear-gradient(to right,
-    transparent calc(var(--curtain-right-edge) - 1.5%),
-    #000 calc(var(--curtain-right-edge) + 1.5%),
-    #000 39%, transparent 42%);
+    transparent calc(var(--curtain-left-edge) - 1.5%),
+    #000 calc(var(--curtain-left-edge) + 1.5%),
+    #000 calc(var(--curtain-right-edge) - 1.5%),
+    transparent calc(var(--curtain-right-edge) + 1.5%));
 }
 .scene-photo-state-lit {
   transition: opacity 380ms ease;
@@ -74,9 +65,9 @@
 }
 .scene-outdoor-light {
   background:
-    radial-gradient(ellipse 32% 40% at 25% 42%, rgba(169, 204, 239, 0.29), transparent 84%),
-    radial-gradient(ellipse 42% 31% at 32% 78%, rgba(154, 190, 226, 0.2), transparent 87%);
-  mix-blend-mode: screen;
+    radial-gradient(ellipse 30% 34% at 23% 61%, rgba(207, 218, 223, 0.58), transparent 84%),
+    radial-gradient(ellipse 48% 31% at 34% 83%, rgba(199, 214, 221, 0.44), transparent 88%);
+  mix-blend-mode: soft-light;
   pointer-events: none;
   transition: opacity 380ms ease;
 }
