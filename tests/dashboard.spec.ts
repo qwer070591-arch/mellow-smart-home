@@ -19,6 +19,8 @@ test("首頁與鬧鐘操作沒有瀏覽器執行錯誤", async ({ page }) => {
   await page.reload();
   await expect(page.getByTestId("living-room-scene")).toBeVisible();
   await expect(page.getByTestId("curtain-panel-left")).toHaveCount(1);
+  await expect(page.getByTestId("arched-window")).toHaveCount(1);
+  await expect(page.getByTestId("wall-art")).toHaveCount(1);
   await page.getByRole("button", { name: "開啟鬧鐘與排程" }).click();
   await page.getByRole("button", { name: /早安排程時間 07:00/ }).click();
   await page.getByRole("button", { name: "取消" }).click();
@@ -96,6 +98,7 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.keyboard.press("Home");
   await expect(page.locator("#living-brightness")).toHaveValue("0");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "0");
+  await expect(page.locator(".room-stage")).toHaveCSS("--stage-glow", "rgba(241, 196, 130, 0.000)");
   await page.locator("#living-color-temp").focus();
   await page.keyboard.press("End");
   await expect(page.locator("#living-color-temp")).toHaveValue("6500");
@@ -107,6 +110,7 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("End");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "1");
+  await expect(page.locator(".room-stage")).toHaveCSS("--stage-glow", "rgba(172, 222, 213, 0.440)");
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-closed-lit-390.png" });
   await page.locator("#living-curtain-position").focus();
   await page.keyboard.press("End");

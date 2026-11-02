@@ -15,6 +15,13 @@ const store = useHomeStore();
 const lamp = computed(() => store.state.lamp);
 const curtainPosition = computed(() => store.state.curtain.position);
 const brightness = computed(() => (lamp.value.on ? lamp.value.brightness : 0));
+const frameGlow = computed(() => {
+  const cool = (lamp.value.colorTemp - 2700) / 3800;
+  const red = Math.round(241 - 69 * cool);
+  const green = Math.round(196 + 26 * cool);
+  const blue = Math.round(130 + 83 * cool);
+  return `rgba(${red}, ${green}, ${blue}, ${(brightness.value / 100 * 0.44).toFixed(3)})`;
+});
 const sceneIcons = {
   home: House,
   movie: Clapperboard,
@@ -36,7 +43,7 @@ const sceneLabel = computed(
 
 <template>
   <section class="living-experience" aria-labelledby="living-title">
-    <div class="room-stage">
+    <div class="room-stage" :style="{ '--stage-glow': frameGlow }">
       <div class="stage-heading">
         <div>
           <span>家的片刻 / 01</span>
