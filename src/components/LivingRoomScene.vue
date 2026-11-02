@@ -98,8 +98,8 @@ const lampColor = computed(() => {
         <stop offset="1" stop-color="#b9d1d9" stop-opacity="0" />
       </radialGradient>
       <radialGradient id="lamp-halo">
-        <stop offset="0" :stop-color="lampColor" stop-opacity=".8" data-testid="lamp-halo-color" />
-        <stop offset=".48" :stop-color="lampColor" stop-opacity=".33" />
+        <stop offset="0" :stop-color="lampColor" stop-opacity=".68" data-testid="lamp-halo-color" />
+        <stop offset=".38" :stop-color="lampColor" stop-opacity=".26" />
         <stop offset="1" :stop-color="lampColor" stop-opacity="0" />
       </radialGradient>
       <radialGradient id="moon-beam">
@@ -227,7 +227,7 @@ const lampColor = computed(() => {
       <path d="M65 319Q79 295 92 299Q87 316 65 319ZM87 377Q99 355 115 362Q106 376 87 377Z" fill="#6a8168" />
     </g>
     <rect data-testid="room-night-shade" width="800" height="500" fill="#071016"
-      :style="{ opacity: isDay ? 0 : Number(((1 - lampPower) * 0.28).toFixed(3)) }" />
+      :style="{ opacity: isDay ? 0 : 0.28 }" />
     <g data-testid="daylight-spill" :style="{ opacity: daylight }">
       <ellipse cx="611" cy="267" rx="192" ry="194" fill="url(#window-bounce)" />
       <ellipse cx="594" cy="402" rx="260" ry="91" transform="rotate(-17 594 402)" fill="url(#day-beam)" />
@@ -238,10 +238,11 @@ const lampColor = computed(() => {
       <ellipse cx="605" cy="300" rx="92" ry="123" fill="url(#moon-beam)" opacity=".2" />
     </g>
     <g data-testid="lamp-lit-room" mask="url(#indoor-light-mask)" :style="{ opacity: lampPower }">
-      <ellipse cx="475" cy="184" rx="190" ry="158" fill="url(#lamp-halo)" opacity=".52" />
-      <ellipse cx="462" cy="255" rx="264" ry="225" fill="url(#lamp-halo)" opacity=".82" data-testid="room-light-wash" />
-      <ellipse cx="447" cy="353" rx="152" ry="98" fill="url(#lamp-halo)" opacity=".5" />
-      <ellipse cx="500" cy="419" rx="176" ry="75" fill="url(#lamp-halo)" opacity=".32" />
+      <ellipse cx="490" cy="185" rx="145" ry="122" fill="url(#lamp-halo)" opacity=".32" />
+      <ellipse cx="485" cy="260" rx="199" ry="160" fill="url(#lamp-halo)" opacity=".48" data-testid="room-light-wash" />
+      <ellipse cx="496" cy="259" rx="103" ry="118" fill="url(#lamp-halo)" opacity=".78" />
+      <ellipse cx="432" cy="348" rx="108" ry="68" fill="url(#lamp-halo)" opacity=".26" />
+      <ellipse cx="514" cy="382" rx="103" ry="67" fill="url(#lamp-halo)" opacity=".37" />
     </g>
     <g class="pendant-lamp" data-testid="pendant-lamp">
       <path d="M498 0V125" stroke="#a8b1a7" stroke-width="4" />

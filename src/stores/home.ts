@@ -36,11 +36,9 @@ export const useHomeStore = defineStore("home", () => {
   }
 
   function setLamp(changes: {
-    on?: boolean;
     brightness?: number;
     colorTemp?: number;
   }) {
-    if (typeof changes.on === "boolean") state.value.lamp.on = changes.on;
     if (
       typeof changes.brightness === "number" &&
       Number.isFinite(changes.brightness)
@@ -52,6 +50,10 @@ export const useHomeStore = defineStore("home", () => {
     )
       state.value.lamp.colorTemp = clamp(changes.colorTemp, 2700, 6500);
     state.value.activeSceneId = null;
+  }
+
+  function toggleLamp() {
+    setLamp({ brightness: state.value.lamp.brightness > 0 ? 0 : 1 });
   }
 
   function setCurtain(position: number) {
@@ -138,6 +140,7 @@ export const useHomeStore = defineStore("home", () => {
     toast,
     storageError,
     setLamp,
+    toggleLamp,
     setCurtain,
     setClimate,
     runScene,

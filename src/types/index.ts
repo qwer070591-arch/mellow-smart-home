@@ -2,7 +2,6 @@ export type SceneId = "home" | "movie" | "sleep" | "away";
 export type RoutineId = "morning" | "night";
 
 export interface LampState {
-  on: boolean;
   brightness: number;
   colorTemp: number;
 }

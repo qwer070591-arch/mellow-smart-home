@@ -5,7 +5,7 @@ export const scenes: ScenePreset[] = [
     id: "home",
     name: "回家",
     detail: "燈光 80%",
-    lamp: { on: true, brightness: 80, colorTemp: 2700 },
+    lamp: { brightness: 80, colorTemp: 2700 },
     curtain: { position: 60 },
     climate: { on: true, target: 24 },
     extras: {
@@ -19,7 +19,7 @@ export const scenes: ScenePreset[] = [
     id: "movie",
     name: "觀影",
     detail: "關簾・微光",
-    lamp: { on: true, brightness: 12, colorTemp: 2700 },
+    lamp: { brightness: 12, colorTemp: 2700 },
     curtain: { position: 0 },
     climate: { on: true, target: 24 },
     extras: {
@@ -33,7 +33,7 @@ export const scenes: ScenePreset[] = [
     id: "sleep",
     name: "睡眠",
     detail: "夜燈 5%",
-    lamp: { on: true, brightness: 5, colorTemp: 2700 },
+    lamp: { brightness: 5, colorTemp: 2700 },
     curtain: { position: 0 },
     climate: { on: true, target: 26 },
     extras: {
@@ -47,7 +47,7 @@ export const scenes: ScenePreset[] = [
     id: "away",
     name: "離家",
     detail: "關燈・開始清掃",
-    lamp: { on: false, brightness: 0, colorTemp: 2700 },
+    lamp: { brightness: 0, colorTemp: 2700 },
     curtain: { position: 0 },
     climate: { on: false, target: 26 },
     extras: {

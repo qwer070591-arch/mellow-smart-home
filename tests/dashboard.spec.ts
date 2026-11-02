@@ -171,6 +171,59 @@ test("情境切換保留手動日夜主題", async ({ page }) => {
   await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0.492");
 });
 
+test("吊燈開關與亮度使用同一狀態，情境和主題不會造成矛盾", async ({ page }) => {
+  const slider = page.locator("#living-brightness");
+  const power = page.getByRole("switch", { name: "吊燈電源" });
+  const setBrightness = async (value: number) => {
+    await slider.evaluate((input, next) => {
+      (input as HTMLInputElement).value = String(next);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }, value);
+    await expect(slider).toHaveValue(String(value));
+    await expect(power).toHaveAttribute("aria-checked", String(value > 0));
+  };
+
+  await setBrightness(0);
+  await expect(page.getByTestId("pendant-emitter")).toHaveCSS("opacity", "0");
+  await power.click();
+  await expect(slider).toHaveValue("1");
+  await expect(power).toHaveAttribute("aria-checked", "true");
+  await power.click();
+  await expect(slider).toHaveValue("0");
+  await expect(power).toHaveAttribute("aria-checked", "false");
+  await setBrightness(50);
+  await setBrightness(0);
+  await page.getByRole("button", { name: "切換至夜晚模式" }).click();
+  await expect(slider).toHaveValue("0");
+  await expect(power).toHaveAttribute("aria-checked", "false");
+
+  for (const [scene, value] of [["回家", 80], ["觀影", 12], ["睡眠", 5], ["離家", 0]] as const) {
+    await page.locator(".scene-presets button").filter({ hasText: scene }).click();
+    await expect(slider).toHaveValue(String(value));
+    await expect(power).toHaveAttribute("aria-checked", String(value > 0));
+  }
+  await page.reload();
+  await expect(slider).toHaveValue("0");
+  await expect(power).toHaveAttribute("aria-checked", "false");
+});
+
+test("舊版關燈資料載入時會將亮度歸零", async ({ page }) => {
+  await page.locator("#living-brightness").evaluate((input) => {
+    (input as HTMLInputElement).value = "50";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("mellow-living-room-v2"))).not.toBeNull();
+  await page.evaluate(() => {
+    const key = "mellow-living-room-v2";
+    const saved = JSON.parse(localStorage.getItem(key) ?? "null");
+    saved.lamp = { ...saved.lamp, on: false, brightness: 80 };
+    localStorage.setItem(key, JSON.stringify(saved));
+  });
+  await page.reload();
+  await expect(page.locator("#living-brightness")).toHaveValue("0");
+  await expect(page.getByRole("switch", { name: "吊燈電源" })).toHaveAttribute("aria-checked", "false");
+});
+
 test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "切換至夜晚模式" }).click();
@@ -179,6 +232,8 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await expect(page.locator("#living-brightness")).toHaveValue("0");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "0");
   await expect(page.getByTestId("room-night-shade")).toHaveCSS("opacity", "0.28");
+  await page.getByRole("switch", { name: "吊燈電源" }).click();
+  await expect(page.locator("#living-brightness")).toHaveValue("1");
   await page.locator("#living-color-temp").focus();
   await page.keyboard.press("End");
   await expect(page.locator("#living-color-temp")).toHaveValue("6500");
@@ -190,7 +245,7 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("End");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "1");
-  await expect(page.getByTestId("room-night-shade")).toHaveCSS("opacity", "0");
+  await expect(page.getByTestId("room-night-shade")).toHaveCSS("opacity", "0.28");
   await expect(page.getByTestId("lamp-halo-color")).toHaveAttribute("stop-color", "rgb(221 241 247)");
   await expect(page.locator(".room-stage")).not.toHaveAttribute("style", /stage-glow/);
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-closed-lit-390.png" });
@@ -262,7 +317,7 @@ test("亮度連續調整只改變人工光，不改變月光", async ({ page }) 
   const moonlightBefore = await page.getByTestId("moonlight-spill").evaluate((element) =>
     getComputedStyle(element).opacity,
   );
-  for (const value of [0, 25, 50, 75, 100]) {
+  for (const value of [0, 1, 25, 50, 75, 100]) {
     await brightness.evaluate((input, next) => {
       (input as HTMLInputElement).value = String(next);
       input.dispatchEvent(new Event("input", { bubbles: true }));
@@ -272,8 +327,8 @@ test("亮度連續調整只改變人工光，不改變月光", async ({ page }) 
       getComputedStyle(element).opacity,
     ))).toBeCloseTo(Math.pow(value / 100, 1.12), 2);
     await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", moonlightBefore);
-    if (value === 50) {
-      await page.locator(".room-stage").screenshot({ path: "output/playwright/light-night-50-390.png", animations: "disabled" });
+    if ([1, 50, 100].includes(value)) {
+      await page.locator(".room-stage").screenshot({ path: `output/playwright/light-night-${value}-390.png`, animations: "disabled" });
     }
   }
 });

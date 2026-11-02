@@ -14,7 +14,7 @@ import LivingRoomScene from "./LivingRoomScene.vue";
 const store = useHomeStore();
 const lamp = computed(() => store.state.lamp);
 const curtainPosition = computed(() => store.state.curtain.position);
-const brightness = computed(() => (lamp.value.on ? lamp.value.brightness : 0));
+const brightness = computed(() => lamp.value.brightness);
 const sceneIcons = {
   home: House,
   movie: Clapperboard,
@@ -81,8 +81,8 @@ const sceneLabel = computed(
             type="button"
             role="switch"
             aria-label="吊燈電源"
-            :aria-checked="lamp.on"
-            @click="store.setLamp({ on: !lamp.on })"
+            :aria-checked="brightness > 0"
+            @click="store.toggleLamp()"
           >
             <span></span>
           </button>
@@ -94,7 +94,6 @@ const sceneLabel = computed(
           min="0"
           max="100"
           :value="lamp.brightness"
-          :disabled="!lamp.on"
           @input="
             store.setLamp({
               brightness: Number(($event.target as HTMLInputElement).value),
@@ -113,7 +112,7 @@ const sceneLabel = computed(
           max="6500"
           step="100"
           :value="lamp.colorTemp"
-          :disabled="!lamp.on"
+          :disabled="brightness === 0"
           @input="
             store.setLamp({
               colorTemp: Number(($event.target as HTMLInputElement).value),

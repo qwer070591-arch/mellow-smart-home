@@ -24,7 +24,10 @@ function validate(value: unknown): LivingState | null {
   )
     return null;
   const { lamp, curtain, climate } = value;
-  if (typeof lamp.on !== "boolean" || typeof climate.on !== "boolean")
+  if (
+    typeof climate.on !== "boolean" ||
+    (lamp.on !== undefined && typeof lamp.on !== "boolean")
+  )
     return null;
   if (
     ![lamp.brightness, lamp.colorTemp, curtain.position, climate.target].every(
@@ -54,8 +57,8 @@ function validate(value: unknown): LivingState | null {
   });
   return {
     lamp: {
-      on: lamp.on,
-      brightness: clamp(lamp.brightness as number, 0, 100),
+      // 舊版將電源與亮度分開保存；關閉時把舊亮度歸零。
+      brightness: lamp.on === false ? 0 : clamp(lamp.brightness as number, 0, 100),
       colorTemp: clamp(lamp.colorTemp as number, 2700, 6500),
     },
     curtain: { position: clamp(curtain.position as number, 0, 100) },
