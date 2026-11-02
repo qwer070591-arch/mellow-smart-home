@@ -621,12 +621,46 @@ test("時間滾輪支援滑鼠滾動、鍵盤與手機滑動", async ({ page, br
   }
 });
 
-for (const width of [1440, 1024, 768, 390, 375]) {
-  test(`${width}px 平板與手機畫面無水平溢出`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 900 });
+const viewports = [
+  { width: 360, height: 800 },
+  { width: 375, height: 900 },
+  { width: 390, height: 844 },
+  { width: 430, height: 932 },
+  { width: 768, height: 1024 },
+  { width: 820, height: 1180 },
+  { width: 1024, height: 768 },
+  { width: 1440, height: 900 },
+];
+
+for (const { width, height } of viewports) {
+  test(`${width}×${height} 版面與排程面板無水平溢出`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
     await expect(page.getByRole("heading", { name: "客廳" })).toBeVisible();
     await expect(page.locator(".room-stage")).toBeVisible();
     await expect(page.getByRole("button", { name: "開啟鬧鐘與排程" })).toBeVisible();
+    const brand = await page.locator(".living-brand").boundingBox();
+    const theme = await page.locator(".theme-toggle").boundingBox();
+    const alarm = await page.locator(".alarm-trigger").boundingBox();
+    const clock = await page.locator(".living-header time").boundingBox();
+    expect(brand!.x + brand!.width).toBeLessThan(theme!.x);
+    expect(theme!.width).toBeGreaterThanOrEqual(44);
+    expect(alarm!.width).toBeGreaterThanOrEqual(44);
+    expect(clock!.x + clock!.width).toBeLessThanOrEqual(width);
+    const columns = await page.locator(".scene-presets").evaluate((element) =>
+      getComputedStyle(element).gridTemplateColumns.split(" ").length,
+    );
+    expect(columns).toBe(width <= 700 ? 2 : 4);
+    const clippedCards = await page.locator(".scene-presets button").evaluateAll((cards) =>
+      cards.some((card) => card.scrollHeight > card.clientHeight + 1),
+    );
+    expect(clippedCards).toBe(false);
+    const lightOutput = await page.locator("#light-control output").boundingBox();
+    const lightSwitch = await page.getByRole("switch", { name: "吊燈電源" }).boundingBox();
+    expect(lightOutput!.x + lightOutput!.width).toBeLessThanOrEqual(lightSwitch!.x);
+    for (const slider of ["#living-brightness", "#living-color-temp", "#living-curtain-position"]) {
+      const box = await page.locator(slider).boundingBox();
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+    }
     const frame = await page.locator(".living-page").boundingBox();
     expect(frame).not.toBeNull();
     expect(frame!.x).toBeGreaterThan(0);
@@ -634,7 +668,7 @@ for (const width of [1440, 1024, 768, 390, 375]) {
     await expect(
       page.getByRole("heading", { name: "24 小時環境趨勢" }),
     ).toBeVisible();
-    if (width <= 390) {
+    if (width <= 430) {
       await expect(page.locator("#living-brightness")).toBeVisible();
       expect(
         await page.evaluate(
@@ -652,7 +686,7 @@ for (const width of [1440, 1024, 768, 390, 375]) {
       path: `output/playwright/overview-${width}.png`,
       fullPage: true,
     });
-    if ([1440, 768, 390].includes(width)) {
+    if ([1440, 1024, 820, 768, 430, 390, 360].includes(width)) {
       await page.getByRole("button", { name: "切換至夜晚模式" }).click();
       await expect(page.getByTestId("day-window")).toHaveCSS("opacity", "0");
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
@@ -660,13 +694,13 @@ for (const width of [1440, 1024, 768, 390, 375]) {
       await page.getByRole("button", { name: "切換至白天模式" }).click();
       await expect(page.getByTestId("day-window")).toHaveCSS("opacity", "1");
     }
-    if (width <= 768) {
+    if (width <= 1024) {
       await page.getByRole("button", { name: "開啟鬧鐘與排程" }).click();
       await expect(page.getByRole("dialog", { name: "鬧鐘與排程" })).toBeVisible();
       await expect(page.locator(".alarm-sheet-panel")).toHaveCSS("transform", "none");
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
       await page.screenshot({ path: `output/playwright/alarm-${width}.png` });
-      if (width <= 390) {
+      if (width <= 430) {
         await page.getByRole("button", { name: /早安排程時間 07:00/ }).click();
         await expect(page.getByRole("listbox", { name: "早安排程小時" })).toBeVisible();
         await expect(page.getByRole("dialog", { name: "早安排程時間選擇器" })).toBeVisible();
@@ -682,5 +716,66 @@ for (const width of [1440, 1024, 768, 390, 375]) {
         () => document.documentElement.scrollWidth > innerWidth,
       ),
     ).toBe(false);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  });
+}
+
+for (const { width, height } of viewports.filter(({ width }) => width !== 375)) {
+  test(`${width}×${height} 拖曳時間後顯示與儲存一致`, async ({ browser }) => {
+    const hasTouch = width < 1440;
+    const context = await browser.newContext({ viewport: { width, height }, hasTouch, isMobile: hasTouch });
+    try {
+      const page = await context.newPage();
+      await page.goto(base);
+      await page.getByRole("button", { name: "開啟鬧鐘與排程" }).click();
+      await page.getByRole("button", { name: /早安排程時間 07:00/ }).click();
+      await expect(page.locator(".time-sheet-panel:not(.alarm-sheet-panel)")).toHaveCSS("transform", "none");
+      const dragWheel = async (label: string, distance: number, initial: string) => {
+        const wheel = page.getByRole("listbox", { name: label });
+        await expect(wheel).toHaveCSS("touch-action", "none");
+        await wheel.scrollIntoViewIfNeeded();
+        const box = await wheel.boundingBox();
+        const x = box!.x + box!.width / 2;
+        const y = box!.y + box!.height / 2;
+        if (hasTouch) {
+          const session = await context.newCDPSession(page);
+          await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y, id: 1 }] });
+          for (let step = 1; step <= 8; step++) {
+            await session.send("Input.dispatchTouchEvent", {
+              type: "touchMove",
+              touchPoints: [{ x, y: y + distance * step / 8, id: 1 }],
+            });
+            if (step === 4) {
+              await expect.poll(() => wheel.locator('[aria-selected="true"]').textContent()).not.toBe(initial);
+            }
+          }
+          await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+        } else {
+          await page.mouse.move(x, y);
+          await page.mouse.down();
+          await page.mouse.move(x, y + distance, { steps: 8 });
+          await page.mouse.up();
+        }
+        const selected = (await wheel.locator('[aria-selected="true"]').textContent())?.trim();
+        expect(selected).not.toBe(initial);
+        return selected;
+      };
+      const minute = await dragWheel("早安排程分鐘", -88, "00");
+      const hour = await dragWheel("早安排程小時", 88, "07");
+      expect(Number(minute)).toBeGreaterThan(0);
+      expect(Number(hour)).toBeLessThan(7);
+      await page.getByRole("button", { name: "確定" }).click();
+      await expect(page.getByRole("button", { name: new RegExp(`早安排程時間 ${hour}:${minute}`) })).toBeVisible();
+      await expect.poll(() => page.evaluate(() => {
+        const saved = localStorage.getItem("mellow-living-room-v2");
+        return saved ? JSON.parse(saved).routines.find((item: { id: string }) => item.id === "morning")?.time : null;
+      })).toBe(`${hour}:${minute}`);
+      await page.getByRole("button", { name: "關閉鬧鐘" }).click();
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+    } finally {
+      await context.close();
+    }
   });
 }

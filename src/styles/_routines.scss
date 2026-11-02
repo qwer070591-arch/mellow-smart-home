@@ -164,8 +164,8 @@
 .time-sheet-heading button {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--line);
   border-radius: 50%;
   background: var(--surface-soft);
@@ -209,15 +209,15 @@
 .time-wheel-column {
   position: relative;
   min-width: 0;
-  height: 210px;
+  height: 220px;
 }
 .time-wheel-selection {
   position: absolute;
   z-index: 0;
-  top: 84px;
+  top: 88px;
   right: 0;
   left: 0;
-  height: 42px;
+  height: 44px;
   border-top: 1px solid var(--sage);
   border-bottom: 1px solid var(--sage);
   border-radius: 6px;
@@ -228,14 +228,18 @@
 .time-wheel-scroll {
   position: relative;
   z-index: 1;
-  height: 210px;
-  padding-block: 84px;
+  height: 220px;
+  padding-block: 88px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  touch-action: pan-y;
+  touch-action: none;
   scroll-snap-type: y mandatory;
   scrollbar-width: none;
   mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
+}
+.time-wheel-scroll.dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
 }
 .time-wheel-scroll::-webkit-scrollbar {
   display: none;
@@ -246,10 +250,10 @@
   border-radius: 8px;
 }
 .time-wheel-option {
-  height: 42px;
+  height: 44px;
   scroll-snap-align: center;
   color: var(--muted);
-  font: 1.1rem/42px var(--font-display);
+  font: 1.1rem/44px var(--font-display);
   text-align: center;
   opacity: 0.35;
   transform: scale(0.82);
