@@ -16,7 +16,13 @@ const isDay = computed(() => props.theme === "light");
 const dayAmbient = computed(() => 0.42 + 0.58 * curtainOpen.value);
 const nightAmbient = computed(() => 0.05 + 0.17 * curtainOpen.value);
 const ambientIntensity = computed(() => isDay.value ? dayAmbient.value : nightAmbient.value);
-const artificialLightIntensity = computed(() => Math.pow(props.brightness / 100, 1.12));
+// 低檔位先漸入，再讓 20% 的局部暖光可見；1% 微弱、0% 完全熄滅。
+const artificialLightIntensity = computed(() => {
+  const level = props.brightness / 100;
+  const lowLevel = Math.min(level * 5, 1);
+  const fadeIn = lowLevel * lowLevel * (3 - 2 * lowLevel);
+  return Math.pow(level, 0.45) * (0.1 + 0.9 * fadeIn);
+});
 const sunlightIntensity = computed(() => isDay.value
   ? Number((curtainOpen.value * 0.82).toFixed(3)) : 0);
 const moonlightIntensity = computed(() => !isDay.value

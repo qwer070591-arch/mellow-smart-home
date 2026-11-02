@@ -4,7 +4,7 @@ import type {
   RoutineId,
   SceneId,
 } from "../types";
-import { initialState } from "../data/mock";
+import { initialState, scenes } from "../data/mock";
 
 const STORAGE_KEY = "mellow-living-room-v2";
 const LEGACY_KEY = "smart-living-v1";
@@ -55,7 +55,7 @@ function validate(value: unknown): LivingState | null {
         typeof saved.lastRunDay === "string" ? saved.lastRunDay : null,
     };
   });
-  return {
+  const validated: LivingState = {
     lamp: {
       // 舊版將電源與亮度分開保存；關閉時把舊亮度歸零。
       brightness: lamp.on === false ? 0 : clamp(lamp.brightness as number, 0, 100),
@@ -86,6 +86,18 @@ function validate(value: unknown): LivingState | null {
       : null,
     routines,
   };
+  // 預設更新後保留使用者儲存的設備數值，但不可繼續標示舊情境為選取中。
+  const preset = scenes.find((scene) => scene.id === validated.activeSceneId);
+  if (preset && (
+    validated.lamp.brightness !== preset.lamp.brightness ||
+    validated.lamp.colorTemp !== preset.lamp.colorTemp ||
+    validated.curtain.position !== preset.curtain.position ||
+    validated.climate.on !== preset.climate.on ||
+    validated.climate.target !== preset.climate.target ||
+    Object.entries(preset.extras).some(([key, enabled]) =>
+      validated.extras[key as keyof LivingState["extras"]] !== enabled)
+  )) validated.activeSceneId = null;
+  return validated;
 }
 
 function migrateLegacy(): LivingState | null {
