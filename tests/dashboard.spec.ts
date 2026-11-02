@@ -707,6 +707,83 @@ const viewports = [
   { width: 1440, height: 900 },
 ];
 
+test("同一頁連續切換桌機、平板、手機與斷點時控制項不被遮擋", async ({ page }) => {
+  const sequence = [
+    [1440, 900], [1024, 768], [820, 1180], [768, 1024],
+    [430, 932], [390, 844], [360, 800], [699, 900],
+    [700, 900], [701, 900], [767, 900],
+    [768, 900], [769, 900], [1023, 800], [1024, 800],
+    [1025, 800], [1079, 800], [1080, 800],
+    [1081, 800], [1280, 800], [1440, 900],
+  ] as const;
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+
+  for (const [width, height] of sequence) {
+    await page.setViewportSize({ width, height });
+    await expect(page.locator(".room-stage")).toBeVisible();
+    await expect(page.locator(".room-control-panel")).toBeVisible();
+    await expect(page.locator(".climate-section")).toBeVisible();
+    await expect(page.locator(".trend-card")).toBeVisible();
+    const layout = await page.evaluate(() => {
+      const selectors = [".room-stage", ".scene-presets", ".room-control-panel", ".climate-section", ".trend-card"];
+      const boxes = selectors.map((selector) => document.querySelector(selector)!.getBoundingClientRect());
+      const overlaps = boxes.some((first, index) => boxes.slice(index + 1).some((second) =>
+        Math.min(first.right, second.right) - Math.max(first.left, second.left) > 1 &&
+        Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top) > 1));
+      return { overlaps, overflow: document.documentElement.scrollWidth > innerWidth };
+    });
+    expect(layout, `${width}×${height}`).toEqual({ overlaps: false, overflow: false });
+    await expect(page.locator(".time-sheet-layer")).toHaveCount(0);
+    for (const selector of ["#living-brightness", "#living-color-temp", "#living-curtain-position"]) {
+      const slider = page.locator(selector);
+      await slider.scrollIntoViewIfNeeded();
+      const receivesPointer = await slider.evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        return document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2) === element;
+      });
+      expect(receivesPointer, `${width}×${height} ${selector}`).toBe(true);
+    }
+    if (width === 390) {
+      await page.screenshot({ path: "output/playwright/resize-mobile-light.png", fullPage: true, animations: "disabled" });
+      await page.getByRole("button", { name: "切換至夜晚模式" }).click();
+      await page.screenshot({ path: "output/playwright/resize-mobile-dark.png", fullPage: true, animations: "disabled" });
+    }
+    if (width === 768 && height === 900) {
+      await page.screenshot({ path: "output/playwright/resize-tablet-dark.png", fullPage: true, animations: "disabled" });
+    }
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    expect(await page.evaluate(() => window.scrollY), `${width}×${height} vertical scroll`).toBeGreaterThan(0);
+  }
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("button", { name: "切換至白天模式" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "開啟鬧鐘與排程" }).click();
+  await page.getByRole("button", { name: /早安排程時間 07:00/ }).click();
+  await page.setViewportSize({ width: 768, height: 1024 });
+  await expect(page.getByRole("listbox", { name: "早安排程分鐘" })).toBeVisible();
+  await page.getByRole("button", { name: "取消" }).click();
+  await page.getByRole("button", { name: "關閉鬧鐘" }).click();
+  await expect(page.locator(".time-sheet-layer")).toHaveCount(0);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.locator("#living-brightness").scrollIntoViewIfNeeded();
+  expect(await page.locator("#living-brightness").evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2) === element;
+  })).toBe(true);
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.evaluate(() => { document.documentElement.style.zoom = "125%"; });
+  await page.locator("#living-curtain-position").scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  expect(await page.locator("#living-curtain-position").evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2) === element;
+  })).toBe(true);
+  await page.evaluate(() => { document.documentElement.style.zoom = ""; });
+  expect(errors).toEqual([]);
+});
+
 for (const { width, height } of viewports) {
   test(`${width}×${height} 版面與排程面板無水平溢出`, async ({ page }) => {
     await page.setViewportSize({ width, height });
