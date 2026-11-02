@@ -1,14 +1,3 @@
-@property --curtain-left-edge {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 26.3%;
-}
-@property --curtain-right-edge {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 26.3%;
-}
-
 .living-experience {
   min-width: 0;
 }
@@ -22,60 +11,18 @@
   box-shadow: 0 22px 48px rgba(0, 0, 0, 0.29), inset 0 1px rgba(255, 255, 255, 0.14);
 }
 .scene-photo-frame,
-.scene-photo-state,
-.scene-curtain-zone,
-.scene-photo,
-.scene-ambient-shade,
-.scene-outdoor-light,
-.scene-cool-tone {
+.living-room-illustration {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
-.scene-photo {
+.living-room-illustration {
   display: block;
-  object-fit: cover;
-  object-position: center center;
 }
-.scene-curtain-zone {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 6%, #000 9%, #000 43%, transparent 47%);
-  mask-image: linear-gradient(to bottom, transparent 6%, #000 9%, #000 43%, transparent 47%);
-}
-.scene-photo-curtain-opening {
-  transition: --curtain-left-edge 280ms ease-out, --curtain-right-edge 280ms ease-out, opacity 120ms ease-out;
-  -webkit-mask-image: linear-gradient(to right,
-    transparent calc(var(--curtain-left-edge) - 1.5%),
-    #000 calc(var(--curtain-left-edge) + 1.5%),
-    #000 calc(var(--curtain-right-edge) - 1.5%),
-    transparent calc(var(--curtain-right-edge) + 1.5%));
-  mask-image: linear-gradient(to right,
-    transparent calc(var(--curtain-left-edge) - 1.5%),
-    #000 calc(var(--curtain-left-edge) + 1.5%),
-    #000 calc(var(--curtain-right-edge) - 1.5%),
-    transparent calc(var(--curtain-right-edge) + 1.5%));
-}
-.scene-photo-state-lit {
-  transition: opacity 380ms ease;
-}
-.scene-ambient-shade {
-  background: linear-gradient(110deg, rgba(5, 11, 20, 0.87), rgba(8, 10, 16, 0.95));
-  pointer-events: none;
-  transition: opacity 380ms ease;
-}
-.scene-outdoor-light {
-  background:
-    radial-gradient(ellipse 30% 34% at 23% 61%, rgba(207, 218, 223, 0.58), transparent 84%),
-    radial-gradient(ellipse 48% 31% at 34% 83%, rgba(199, 214, 221, 0.44), transparent 88%);
-  mix-blend-mode: soft-light;
-  pointer-events: none;
-  transition: opacity 380ms ease;
-}
-.scene-cool-tone {
-  background: radial-gradient(ellipse 70% 105% at 88% 40%, rgba(167, 208, 255, 0.75), transparent 90%);
-  mix-blend-mode: color;
-  pointer-events: none;
-  transition: opacity 380ms ease;
+.living-room-illustration [data-testid="lamp-lit-room"],
+.living-room-illustration [data-testid="moonlight-spill"] {
+  transition: opacity 300ms ease;
 }
 .room-stage::after {
   content: "";
@@ -216,6 +163,9 @@
 }
 
 @media (min-width: 701px) {
+  .room-stage {
+    aspect-ratio: 8 / 5;
+  }
   .room-control-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px;

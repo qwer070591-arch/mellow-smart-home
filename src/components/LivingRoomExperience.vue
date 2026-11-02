@@ -9,33 +9,12 @@ import {
   DoorOpen,
 } from "@lucide/vue";
 import { useHomeStore } from "../stores/home";
-import openOffPhoto from "../assets/living-room-window-open-off.webp";
-import closedOffPhoto from "../assets/living-room-window-closed-off.webp";
-import openLitPhoto from "../assets/living-room-window-open-lit.webp";
-import closedLitPhoto from "../assets/living-room-window-closed-lit.webp";
+import LivingRoomScene from "./LivingRoomScene.vue";
 
 const store = useHomeStore();
 const lamp = computed(() => store.state.lamp);
 const curtainPosition = computed(() => store.state.curtain.position);
 const brightness = computed(() => (lamp.value.on ? lamp.value.brightness : 0));
-const lampLevel = computed(() => Math.pow(brightness.value / 100, 1.12));
-const curtainOpen = computed(() => curtainPosition.value / 100);
-const curtainReveal = computed(() => Math.pow(curtainOpen.value, 1.6));
-// Reveal only the growing gap between two curtains; the closed room stays the base image.
-const leftCurtainEdge = computed(() => `${(26.3 - 21.3 * curtainReveal.value).toFixed(2)}%`);
-const rightCurtainEdge = computed(() => `${(26.3 + 23.7 * curtainReveal.value).toFixed(2)}%`);
-const openingOpacity = computed(() => Math.min(curtainPosition.value / 5, 1));
-const ambientShade = computed(() =>
-  Number(((1 - lampLevel.value) * 0.2).toFixed(3)),
-);
-const outdoorLight = computed(() =>
-  Number((curtainOpen.value * (0.55 - 0.45 * lampLevel.value)).toFixed(3)),
-);
-const coolTone = computed(() =>
-  Number(
-    (((lamp.value.colorTemp - 2700) / 3800) * lampLevel.value * 0.55).toFixed(3),
-  ),
-);
 const sceneIcons = {
   home: House,
   movie: Clapperboard,
@@ -65,37 +44,8 @@ const sceneLabel = computed(
         </div>
       </div>
       <div class="scene-photo-frame" role="img" :aria-label="sceneLabel">
-        <div class="scene-photo-state">
-          <img class="scene-photo" :src="closedOffPhoto" alt="" />
-          <div class="scene-curtain-zone">
-            <img class="scene-photo scene-photo-curtain-opening" :src="openOffPhoto" alt=""
-              data-testid="curtain-opening"
-              :style="{ '--curtain-left-edge': leftCurtainEdge, '--curtain-right-edge': rightCurtainEdge, opacity: openingOpacity }" />
-          </div>
-        </div>
-        <div class="scene-photo-state scene-photo-state-lit" data-testid="lamp-lit-room"
-          :style="{ opacity: lampLevel }">
-          <img class="scene-photo" :src="closedLitPhoto" alt="" />
-          <div class="scene-curtain-zone">
-            <img class="scene-photo scene-photo-curtain-opening" :src="openLitPhoto" alt=""
-              :style="{ '--curtain-left-edge': leftCurtainEdge, '--curtain-right-edge': rightCurtainEdge, opacity: openingOpacity }" />
-          </div>
-        </div>
-        <div
-          class="scene-ambient-shade"
-          data-testid="ambient-shade"
-          :style="{ opacity: ambientShade }"
-        ></div>
-        <div
-          class="scene-outdoor-light"
-          data-testid="outdoor-light"
-          :style="{ opacity: outdoorLight }"
-        ></div>
-        <div
-          class="scene-cool-tone"
-          data-testid="lamp-tone"
-          :style="{ opacity: coolTone }"
-        ></div>
+        <LivingRoomScene :brightness="brightness" :color-temp="lamp.colorTemp"
+          :curtain-position="curtainPosition" />
       </div>
     </div>
 
