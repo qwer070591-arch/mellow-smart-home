@@ -2,12 +2,12 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--line);
   border-radius: 13px;
-  background: linear-gradient(145deg, rgba(227, 247, 255, 0.18), rgba(227, 247, 255, 0.04));
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.16);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
   color: var(--sage-dark);
   backdrop-filter: blur(18px);
 }
@@ -25,7 +25,7 @@
   background: var(--sage);
 }
 .time-sheet-panel.alarm-sheet-panel {
-  background: linear-gradient(150deg, rgba(40, 65, 80, 0.97), rgba(15, 29, 40, 0.97));
+  background: var(--surface);
 }
 .alarm-list {
   display: grid;

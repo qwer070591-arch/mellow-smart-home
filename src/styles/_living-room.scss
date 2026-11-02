@@ -6,9 +6,9 @@
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 20px;
-  background: #171b20;
-  border: 1px solid rgba(220, 243, 255, 0.3);
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.29), inset 0 1px rgba(255, 255, 255, 0.14);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  box-shadow: var(--card-shadow);
 }
 .scene-art-frame,
 .living-room-illustration {
@@ -22,8 +22,11 @@
 }
 .living-room-illustration [data-testid="lamp-lit-room"],
 .living-room-illustration [data-testid="room-night-shade"],
-.living-room-illustration [data-testid="moonlight-spill"] {
-  transition: opacity 300ms ease;
+.living-room-illustration [data-testid="moonlight-spill"],
+.living-room-illustration [data-testid="daylight-spill"],
+.living-room-illustration [data-testid="day-room"],
+.living-room-illustration [data-testid="day-window"] {
+  transition: opacity 320ms ease;
 }
 .room-stage::after {
   content: "";
@@ -31,7 +34,7 @@
   z-index: 1;
   inset: 0 0 auto;
   height: 35%;
-  background: linear-gradient(rgba(15, 18, 15, 0.48), transparent);
+  background: linear-gradient(var(--scene-scrim), transparent);
   pointer-events: none;
 }
 .stage-heading {
@@ -75,9 +78,10 @@
   padding: 0 19px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: linear-gradient(140deg, rgba(218, 244, 255, 0.11), rgba(218, 244, 255, 0.035) 55%, rgba(178, 217, 231, 0.07));
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13), 0 16px 38px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(24px) saturate(140%);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(12px);
+  transition: background-color 280ms ease, border-color 280ms ease, box-shadow 280ms ease;
 }
 .room-control {
   min-width: 0;

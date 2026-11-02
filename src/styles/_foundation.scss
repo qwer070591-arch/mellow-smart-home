@@ -7,15 +7,22 @@
     "Segoe UI",
     sans-serif;
   color-scheme: light;
-  --bg: #f8f7f3;
+  --bg: #f7f6f2;
   --surface: #fffefa;
-  --surface-soft: #f1f2eb;
-  --ink: #25332e;
-  --muted: #7d8981;
-  --line: #e7e9e2;
-  --sage: #778e79;
-  --sage-dark: #536f5a;
-  --sage-soft: #e9eee6;
+  --surface-soft: #f0efeb;
+  --ink: #242824;
+  --muted: #687269;
+  --line: #e5e5df;
+  --sage: #65867a;
+  --sage-dark: #496b5d;
+  --sage-soft: #e7eee8;
+  --page-frame: #e9ebe4;
+  --card-bg: rgba(255, 255, 255, 0.78);
+  --card-active: #eaf1e9;
+  --card-shadow: 0 12px 34px rgba(53, 70, 57, 0.055);
+  --page-shadow: 0 28px 76px rgba(44, 61, 46, 0.1);
+  --header-line: #e7e8e1;
+  --scene-scrim: rgba(25, 37, 29, 0.22);
   --cream: #f7e9cf;
   --peach: #f6dfcb;
   --hero: #dce8dc;
@@ -28,15 +35,22 @@
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #171f1c;
-  --surface: #222c27;
-  --surface-soft: #2b3930;
-  --ink: #f0f3ed;
-  --muted: #a7b4a8;
-  --line: #3a4a3e;
-  --sage: #9cbaa0;
-  --sage-dark: #a8c7aa;
-  --sage-soft: #35473a;
+  --bg: #1a2429;
+  --surface: #243238;
+  --surface-soft: #2d3b40;
+  --ink: #edf2ee;
+  --muted: #aabbb9;
+  --line: #3b4d50;
+  --sage: #a6c8b9;
+  --sage-dark: #bedbd0;
+  --sage-soft: #344d4c;
+  --page-frame: #111a20;
+  --card-bg: rgba(48, 66, 72, 0.76);
+  --card-active: #34504e;
+  --card-shadow: 0 16px 38px rgba(3, 12, 17, 0.15);
+  --page-shadow: 0 30px 85px rgba(0, 5, 9, 0.42);
+  --header-line: #405155;
+  --scene-scrim: rgba(9, 18, 22, 0.38);
   --cream: #544c3d;
   --peach: #53453b;
   --hero: #354b3b;
@@ -60,6 +74,7 @@ body {
   color: var(--ink);
   font-size: 15px;
   line-height: 1.5;
+  transition: background-color 280ms ease, color 280ms ease;
 }
 button,
 input,

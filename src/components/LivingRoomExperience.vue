@@ -44,7 +44,7 @@ const sceneLabel = computed(
         </div>
       </div>
       <div class="scene-art-frame" role="img" :aria-label="sceneLabel">
-        <LivingRoomScene :brightness="brightness" :color-temp="lamp.colorTemp"
+        <LivingRoomScene :theme="store.theme" :brightness="brightness" :color-temp="lamp.colorTemp"
           :curtain-position="curtainPosition" />
       </div>
     </div>

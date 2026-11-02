@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useHomeStore } from "./stores/home";
 import AlarmCenter from "./components/AlarmCenter.vue";
+import { Moon, Sun } from "@lucide/vue";
 
 const store = useHomeStore();
 const now = ref(new Date());
@@ -46,20 +47,20 @@ onBeforeUnmount(() => {
           >
             <path
               d="M3 10L12 3L21 10V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V10Z"
-              stroke="#E2E8F0"
+              stroke="currentColor"
               stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"
             />
             <path
               d="M9 14C9.55228 13.4477 10.7312 13 12 13C13.2688 13 14.4477 13.4477 15 14"
-              stroke="#38BDF8"
+              stroke="currentColor"
               stroke-width="2"
               stroke-linecap="round"
             />
             <path
               d="M7 11.5C8.125 10.375 9.97917 9.5 12 9.5C14.0208 9.5 15.875 10.375 17 11.5"
-              stroke="#38BDF8"
+              stroke="currentColor"
               stroke-width="2"
               stroke-linecap="round"
             />
@@ -71,6 +72,15 @@ onBeforeUnmount(() => {
         >
       </RouterLink>
       <div class="header-clock">
+        <button class="theme-toggle" type="button"
+          :aria-label="store.theme === 'light' ? '切換至夜晚模式' : '切換至白天模式'"
+          :aria-pressed="store.theme === 'dark'"
+          @click="store.setTheme(store.theme === 'light' ? 'dark' : 'light')">
+          <Transition name="theme-icon" mode="out-in">
+            <component :is="store.theme === 'light' ? Moon : Sun" :key="store.theme"
+              :size="19" aria-hidden="true" />
+          </Transition>
+        </button>
         <AlarmCenter />
         <time :datetime="now.toISOString()">{{ time }}</time>
       </div>

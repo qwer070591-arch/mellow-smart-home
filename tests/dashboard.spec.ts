@@ -29,11 +29,65 @@ test("首頁與鬧鐘操作沒有瀏覽器執行錯誤", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test("預設白天，主題與時鐘獨立且重新整理後保留", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.getByRole("button", { name: "切換至夜晚模式" })).toBeVisible();
+  await expect(page.getByTestId("day-room")).toHaveCSS("opacity", "1");
+  await expect(page.getByTestId("day-window")).toHaveCSS("opacity", "1");
+  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0");
+  await expect(page.locator("#living-brightness")).toHaveValue("80");
+  await expect(page.locator("#living-curtain-position")).toHaveValue("60");
+  const clock = await page.locator(".living-header time").textContent();
+  await page.getByRole("button", { name: "切換至夜晚模式" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByTestId("day-window")).toHaveCSS("opacity", "0");
+  await expect(page.getByTestId("day-room")).toHaveCSS("opacity", "0");
+  await expect(page.getByTestId("moonlight-spill")).not.toHaveCSS("opacity", "0");
+  await expect(page.locator("#living-brightness")).toHaveValue("80");
+  await expect(page.locator("#living-curtain-position")).toHaveValue("60");
+  expect(await page.locator(".living-header time").textContent()).toBe(clock);
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByRole("button", { name: "切換至白天模式" })).toBeVisible();
+  await page.getByRole("button", { name: "切換至白天模式" }).click();
+  await expect(page.getByTestId("day-window")).toHaveCSS("opacity", "1");
+  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0");
+  await page.reload();
+  await expect(page.getByRole("button", { name: "切換至夜晚模式" })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("減少動畫偏好下仍可切換主題", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const duration = await page.getByTestId("day-window").evaluate((element) =>
+    parseFloat(getComputedStyle(element).transitionDuration),
+  );
+  expect(duration).toBeLessThan(0.01);
+  await page.getByRole("button", { name: "切換至夜晚模式" }).click();
+  await expect(page.getByTestId("day-window")).toHaveCSS("opacity", "0");
+});
+
 test("窗簾由中央向左右拉開且不影響室內照明", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const slider = page.locator("#living-curtain-position");
   const left = page.getByTestId("curtain-panel-left");
   const right = page.getByTestId("curtain-panel-right");
+  await slider.evaluate((input) => {
+    (input as HTMLInputElement).value = "0";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0");
+  await slider.evaluate((input) => {
+    (input as HTMLInputElement).value = "100";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await expect(page.getByTestId("daylight-spill")).not.toHaveCSS("opacity", "0");
+  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0");
+  await page.getByRole("button", { name: "切換至夜晚模式" }).click();
   for (const position of [0, 25, 49, 50, 51, 75, 100]) {
     await slider.evaluate((input, value) => {
       (input as HTMLInputElement).value = String(value);
@@ -95,11 +149,12 @@ test("場景情境同步設備及溫度，重新整理後保留", async ({ page 
 
 test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "切換至夜晚模式" }).click();
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("Home");
   await expect(page.locator("#living-brightness")).toHaveValue("0");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "0");
-  await expect(page.getByTestId("room-night-shade")).toHaveCSS("opacity", "0.34");
+  await expect(page.getByTestId("room-night-shade")).toHaveCSS("opacity", "0.28");
   await page.locator("#living-color-temp").focus();
   await page.keyboard.press("End");
   await expect(page.locator("#living-color-temp")).toHaveValue("6500");
@@ -340,7 +395,7 @@ test("時間滾輪支援滑鼠滾動、鍵盤與手機滑動", async ({ page, br
   }
 });
 
-for (const width of [1024, 768, 390, 375]) {
+for (const width of [1440, 1024, 768, 390, 375]) {
   test(`${width}px 平板與手機畫面無水平溢出`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await expect(page.getByRole("heading", { name: "客廳" })).toBeVisible();
@@ -371,6 +426,14 @@ for (const width of [1024, 768, 390, 375]) {
       path: `output/playwright/overview-${width}.png`,
       fullPage: true,
     });
+    if ([1440, 768, 390].includes(width)) {
+      await page.getByRole("button", { name: "切換至夜晚模式" }).click();
+      await expect(page.getByTestId("day-window")).toHaveCSS("opacity", "0");
+      expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+      await page.screenshot({ path: `output/playwright/overview-dark-${width}.png`, fullPage: true });
+      await page.getByRole("button", { name: "切換至白天模式" }).click();
+      await expect(page.getByTestId("day-window")).toHaveCSS("opacity", "1");
+    }
     if (width <= 768) {
       await page.getByRole("button", { name: "開啟鬧鐘與排程" }).click();
       await expect(page.getByRole("dialog", { name: "鬧鐘與排程" })).toBeVisible();

@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 const props = defineProps<{
+  theme: "light" | "dark";
   brightness: number;
   colorTemp: number;
   curtainPosition: number;
@@ -11,7 +12,11 @@ const lampPower = computed(() => Math.pow(props.brightness / 100, 1.12));
 const curtainOpen = computed(() => props.curtainPosition / 100);
 const panelWidth = computed(() => 9 + 74 * (1 - curtainOpen.value));
 const rightPanelX = computed(() => 731 - panelWidth.value);
-const moonlight = computed(() => Number((curtainOpen.value * (0.55 - 0.4 * lampPower.value)).toFixed(3)));
+const moonlight = computed(() => props.theme === "dark"
+  ? Number((curtainOpen.value * (0.55 - 0.4 * lampPower.value)).toFixed(3)) : 0);
+const daylight = computed(() => props.theme === "light"
+  ? Number((curtainOpen.value * (0.65 - 0.18 * lampPower.value)).toFixed(3)) : 0);
+const isDay = computed(() => props.theme === "light");
 const lampColor = computed(() => {
   const cool = (props.colorTemp - 2700) / 3800;
   return `rgb(${Math.round(255 - 34 * cool)} ${Math.round(220 + 21 * cool)} ${Math.round(169 + 78 * cool)})`;
@@ -31,10 +36,23 @@ const lampColor = computed(() => {
         <stop offset="0" stop-color="#303632" />
         <stop offset="1" stop-color="#1c2423" />
       </linearGradient>
+      <linearGradient id="day-wall" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#efe9dc" />
+        <stop offset="1" stop-color="#d9dfd3" />
+      </linearGradient>
+      <linearGradient id="day-floor" x1="0" y1="0" x2="0.9" y2="1">
+        <stop offset="0" stop-color="#d5cabb" />
+        <stop offset="1" stop-color="#b9b4a9" />
+      </linearGradient>
+      <linearGradient id="day-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#a7c8d0" />
+        <stop offset="0.62" stop-color="#dae3dc" />
+        <stop offset="1" stop-color="#f0e4cf" />
+      </linearGradient>
       <linearGradient id="night-sky" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#374b50" />
-        <stop offset="0.58" stop-color="#526e69" />
-        <stop offset="1" stop-color="#708173" />
+        <stop offset="0" stop-color="#172d45" />
+        <stop offset="0.58" stop-color="#2f4859" />
+        <stop offset="1" stop-color="#536b6b" />
       </linearGradient>
       <linearGradient id="curtain-fabric" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0" stop-color="#727c72" />
@@ -64,10 +82,16 @@ const lampColor = computed(() => {
         <stop offset=".48" :stop-color="lampColor" stop-opacity=".2" />
         <stop offset="1" :stop-color="lampColor" stop-opacity="0" />
       </radialGradient>
-      <linearGradient id="moon-beam" x1="0" y1="0" x2=".5" y2="1">
-        <stop offset="0" stop-color="#d4e1d3" stop-opacity=".32" />
-        <stop offset="1" stop-color="#aabfaf" stop-opacity="0" />
-      </linearGradient>
+      <radialGradient id="moon-beam">
+        <stop offset="0" stop-color="#c5d9df" stop-opacity=".24" />
+        <stop offset=".55" stop-color="#a6bec8" stop-opacity=".08" />
+        <stop offset="1" stop-color="#a6bec8" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="day-beam">
+        <stop offset="0" stop-color="#fff3d9" stop-opacity=".72" />
+        <stop offset=".55" stop-color="#f9e8c3" stop-opacity=".25" />
+        <stop offset="1" stop-color="#f9e8c3" stop-opacity="0" />
+      </radialGradient>
       <clipPath id="window-glass">
         <path d="M575 162Q575 85 650 82Q725 85 725 162V333L575 343Z" />
       </clipPath>
@@ -78,9 +102,11 @@ const lampColor = computed(() => {
 
     <rect width="800" height="500" fill="url(#room-wall)" />
     <path d="M0 355 800 309V500H0Z" fill="url(#room-floor)" />
+    <g data-testid="day-room" :style="{ opacity: isDay ? 1 : 0 }">
+      <rect width="800" height="500" fill="url(#day-wall)" />
+      <path d="M0 355 800 309V500H0Z" fill="url(#day-floor)" />
+    </g>
     <path d="M0 359 800 312" stroke="#6a7467" stroke-opacity=".17" stroke-width="2" />
-    <path d="M112 490 512 366 722 422 341 500Z" fill="#a6a799" opacity=".12" />
-    <path d="M307 488 565 375 733 424 469 500Z" fill="#1a2420" opacity=".32" />
 
     <g class="wall-details">
       <path d="M82 99V358M102 96V358M122 94V358M142 92V358" stroke="#a7b09a" stroke-opacity=".12" stroke-width="3" />
@@ -95,12 +121,20 @@ const lampColor = computed(() => {
       <path d="M575 162Q575 85 650 82Q725 85 725 162V333L575 343Z" fill="url(#night-sky)" />
       <g clip-path="url(#window-glass)">
         <rect x="570" y="75" width="160" height="270" fill="url(#night-sky)" />
-        <path d="M558 226Q600 203 636 221T735 205V350H558Z" fill="#435e54" opacity=".86" />
-        <path d="M558 273Q591 232 613 260T664 238Q690 219 714 248L743 223V353H558Z" fill="#344c45" />
-        <path d="M557 302Q593 259 619 285T669 271Q699 256 739 281V354H557Z" fill="#273d38" />
-        <path d="M567 330Q580 302 594 310T613 295Q627 286 637 311T662 300Q683 285 693 316T730 297V356H567Z" fill="#20332f" />
-        <circle cx="681" cy="145" r="3" fill="#d1d8bd" opacity=".55" />
+        <path d="M558 226Q600 203 636 221T735 205V350H558Z" fill="#3e5861" opacity=".86" />
+        <path d="M558 273Q591 232 613 260T664 238Q690 219 714 248L743 223V353H558Z" fill="#2a4750" />
+        <path d="M557 302Q593 259 619 285T669 271Q699 256 739 281V354H557Z" fill="#233b45" />
+        <path d="M567 330Q580 302 594 310T613 295Q627 286 637 311T662 300Q683 285 693 316T730 297V356H567Z" fill="#1a313b" />
+        <circle cx="682" cy="142" r="8" fill="#e3e9df" opacity=".76" />
+        <circle cx="686" cy="139" r="8" fill="#263f52" />
         <circle cx="701" cy="179" r="1.4" fill="#d9d9c2" opacity=".38" />
+        <g data-testid="day-window" :style="{ opacity: isDay ? 1 : 0 }">
+          <rect x="570" y="75" width="160" height="270" fill="url(#day-sky)" />
+          <circle cx="676" cy="146" r="18" fill="#f7f1d9" opacity=".62" />
+          <path d="M565 253Q615 211 653 245T735 228V350H565Z" fill="#9eb8a8" />
+          <path d="M565 287Q614 256 649 278T735 259V350H565Z" fill="#769c88" />
+          <path d="M565 318Q616 292 658 306T735 289V350H565Z" fill="#5f8676" />
+        </g>
         <path d="M650 82V340" stroke="#243433" stroke-opacity=".7" stroke-width="5" />
         <path d="M652 84V339" stroke="#b2baaa" stroke-opacity=".19" stroke-width="2" />
         <rect x="565" y="65" :width="panelWidth" height="284" fill="url(#curtain-fabric)" data-testid="curtain-panel-left" />
@@ -112,10 +146,9 @@ const lampColor = computed(() => {
       <path d="M572 348 731 337" stroke="#b7c2af" stroke-opacity=".28" stroke-width="3" />
     </g>
 
-    <path d="M129 387 470 340 684 419 347 489Z" fill="#0e1614" opacity=".47" filter="url(#room-soft-shadow)" />
-    <path d="M164 379 464 338 654 419 338 466Z" fill="#6c746b" opacity=".48" />
-    <path d="M185 382 469 348 619 416 332 452Z" fill="#b9bbab" opacity=".15" />
-    <path d="M183 396 434 366 515 397 270 434Z" fill="#151d1a" opacity=".21" />
+    <ellipse cx="393" cy="439" rx="258" ry="45" transform="rotate(-6 393 439)" fill="#17211d" opacity=".24" filter="url(#room-soft-shadow)" />
+    <ellipse cx="389" cy="432" rx="242" ry="39" transform="rotate(-6 389 432)" fill="#9a9e8e" opacity=".33" />
+    <ellipse cx="389" cy="428" rx="228" ry="32" transform="rotate(-6 389 428)" fill="#d0cbb8" opacity=".1" />
 
     <g class="sofa-scene">
       <ellipse cx="319" cy="425" rx="181" ry="24" fill="#0b1617" opacity=".34" />
@@ -156,15 +189,19 @@ const lampColor = computed(() => {
       <path d="M65 319Q79 295 92 299Q87 316 65 319ZM87 377Q99 355 115 362Q106 376 87 377Z" fill="#6a8168" />
     </g>
     <rect data-testid="room-night-shade" width="800" height="500" fill="#071016"
-      :style="{ opacity: Number(((1 - lampPower) * 0.34).toFixed(3)) }" />
+      :style="{ opacity: isDay ? 0 : Number(((1 - lampPower) * 0.28).toFixed(3)) }" />
+    <g data-testid="daylight-spill" :style="{ opacity: daylight }">
+      <ellipse cx="590" cy="404" rx="308" ry="98" transform="rotate(-17 590 404)" fill="url(#day-beam)" />
+      <ellipse cx="578" cy="300" rx="105" ry="136" fill="url(#day-beam)" opacity=".24" />
+    </g>
     <g data-testid="moonlight-spill" :style="{ opacity: moonlight }">
-      <path d="M585 313 720 306 795 484 370 494Z" fill="url(#moon-beam)" />
-      <path d="M520 318 598 315 706 461 403 467Z" fill="#a9c6c8" opacity=".15" />
+      <ellipse cx="617" cy="408" rx="306" ry="99" transform="rotate(-17 617 408)" fill="url(#moon-beam)" />
+      <ellipse cx="605" cy="300" rx="92" ry="123" fill="url(#moon-beam)" opacity=".2" />
     </g>
     <g data-testid="lamp-lit-room" :style="{ opacity: lampPower }">
-      <rect width="800" height="500" :fill="lampColor" opacity=".12" style="mix-blend-mode: screen" data-testid="room-light-wash" />
+      <rect width="800" height="500" :fill="lampColor" :opacity="isDay ? 0.045 : 0.12" style="mix-blend-mode: screen" data-testid="room-light-wash" />
       <ellipse cx="496" cy="225" rx="365" ry="262" fill="url(#lamp-halo)" opacity=".42" />
-      <path d="M460 184 538 184 707 500 270 500Z" :fill="lampColor" opacity=".045" />
+      <ellipse cx="505" cy="425" rx="195" ry="44" fill="url(#lamp-halo)" opacity=".13" />
     </g>
     <g class="pendant-lamp" data-testid="pendant-lamp">
       <path d="M498 0V125" stroke="#a8b1a7" stroke-width="4" />
@@ -174,6 +211,5 @@ const lampColor = computed(() => {
       <ellipse cx="499" cy="184" rx="39" ry="7" fill="#c2c4b2" />
       <ellipse cx="499" cy="185" rx="31" ry="4" :fill="lampColor" :opacity="0.17 + lampPower * 0.8" />
     </g>
-    <path d="M0 478Q238 447 426 500H0Z" fill="#131d1a" opacity=".2" />
   </svg>
 </template>

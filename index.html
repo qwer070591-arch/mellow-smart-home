@@ -4,7 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/mellow.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0d151c" />
+    <meta name="theme-color" content="#F7F6F2" />
+    <script>
+      try {
+        const savedTheme = localStorage.getItem('mellow-theme');
+        document.documentElement.dataset.theme = savedTheme === 'dark' ? 'dark' : 'light';
+        if (savedTheme === 'dark') {
+          document.querySelector('meta[name="theme-color"]').content = '#1A2429';
+        }
+      } catch { /* Default to the light theme when storage is unavailable. */ }
+    </script>
     <meta name="description" content="Mellow 智慧生活示範 App。透過手機與平板控制客廳燈光、窗簾、溫度與氛圍，設定本機排程。" />
     <title>Mellow — 智慧生活</title>
   </head>

@@ -4,5 +4,4 @@ import App from "./App.vue";
 import router from "./router";
 import "./styles/main.scss";
 
-document.documentElement.dataset.theme = "dark";
 createApp(App).use(createPinia()).use(router).mount("#app");

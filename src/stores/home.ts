@@ -9,9 +9,25 @@ const clamp = (value: number, min: number, max: number) =>
 
 export const useHomeStore = defineStore("home", () => {
   const state = ref(loadState());
+  const theme = ref<"light" | "dark">(
+    document.documentElement.dataset.theme === "dark" ? "dark" : "light",
+  );
   const toast = ref("");
   const storageError = ref(false);
   let toastTimer: ReturnType<typeof setTimeout> | undefined;
+
+  function setTheme(value: "light" | "dark") {
+    theme.value = value;
+    document.documentElement.dataset.theme = value;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute(
+      "content", value === "dark" ? "#1A2429" : "#F7F6F2",
+    );
+    try {
+      localStorage.setItem("mellow-theme", value);
+    } catch {
+      storageError.value = true;
+    }
+  }
 
   function notify(message: string) {
     toast.value = message;
@@ -116,6 +132,8 @@ export const useHomeStore = defineStore("home", () => {
   );
   return {
     state,
+    theme,
+    setTheme,
     scenes,
     toast,
     storageError,
