@@ -227,23 +227,29 @@ test("日夜與吊燈四種光照在手機及桌機可區分", async ({ page }) 
     await setRange(curtain, 100);
     await setRange(brightness, 0);
     await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0.82");
+    await expect(page.getByTestId("wall-daylight")).toHaveCSS("opacity", "0.82");
+    await expect(page.getByTestId("wall-moonlight")).toHaveCSS("opacity", "0");
     await expect(page.getByTestId("pendant-emitter")).toHaveCSS("opacity", "0");
     await page.locator(".room-stage").screenshot({ path: `output/playwright/light-day-off-${width}.png`, animations: "disabled" });
 
     await setRange(brightness, 80);
     await expect(page.getByTestId("lamp-lit-room")).not.toHaveCSS("opacity", "0");
     await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0.82");
+    await expect(page.getByTestId("wall-daylight")).toHaveCSS("opacity", "0.82");
     await page.locator(".room-stage").screenshot({ path: `output/playwright/light-day-on-${width}.png`, animations: "disabled" });
 
     await page.getByRole("button", { name: "切換至夜晚模式" }).click();
     await setRange(brightness, 0);
     await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0");
+    await expect(page.getByTestId("wall-daylight")).toHaveCSS("opacity", "0");
     await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0.38");
+    await expect(page.getByTestId("wall-moonlight")).toHaveCSS("opacity", "0.38");
     await expect(page.getByTestId("pendant-emitter")).toHaveCSS("opacity", "0");
     await page.locator(".room-stage").screenshot({ path: `output/playwright/light-night-off-${width}.png`, animations: "disabled" });
 
     await setRange(brightness, 80);
     await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0.38");
+    await expect(page.getByTestId("wall-moonlight")).toHaveCSS("opacity", "0.38");
     await page.locator(".room-stage").screenshot({ path: `output/playwright/light-night-on-${width}.png`, animations: "disabled" });
   }
 });

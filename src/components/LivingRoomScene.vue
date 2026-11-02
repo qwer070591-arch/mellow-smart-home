@@ -28,23 +28,27 @@ const lampColor = computed(() => {
     preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
     <defs>
       <linearGradient id="room-wall" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#353a38" />
-        <stop offset="0.52" stop-color="#252f31" />
-        <stop offset="1" stop-color="#1c292e" />
+        <stop offset="0" stop-color="#3e4849" />
+        <stop offset="0.56" stop-color="#465355" />
+        <stop offset="1" stop-color="#53656a" />
       </linearGradient>
       <linearGradient id="room-floor" x1="0" y1="0" x2="0.8" y2="1">
         <stop offset="0" stop-color="#303632" />
         <stop offset="1" stop-color="#1c2423" />
       </linearGradient>
-      <linearGradient id="day-wall" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#cbc8bd" />
-        <stop offset=".58" stop-color="#d9d5c9" />
-        <stop offset="1" stop-color="#e4dfd2" />
+      <linearGradient id="day-wall" x1="0" y1="0" x2="1" y2="0.3">
+        <stop offset="0" stop-color="#cdcac3" />
+        <stop offset=".54" stop-color="#d8d5cd" />
+        <stop offset="1" stop-color="#dcd9d1" />
       </linearGradient>
       <linearGradient id="day-floor" x1="0" y1="0" x2="0.9" y2="1">
-        <stop offset="0" stop-color="#aaa79d" />
-        <stop offset="1" stop-color="#c8bdac" />
+        <stop offset="0" stop-color="#a9a69e" />
+        <stop offset="1" stop-color="#bbb4a9" />
       </linearGradient>
+      <pattern id="concrete-grain" width="29" height="23" patternUnits="userSpaceOnUse">
+        <path d="M4 6h2M19 15h1M25 3h2" stroke="#696d67" stroke-opacity=".1" stroke-width=".6" />
+        <path d="M12 19h2M23 10h1" stroke="#fff" stroke-opacity=".16" stroke-width=".6" />
+      </pattern>
       <linearGradient id="day-sky" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#8ebfce" />
         <stop offset="0.62" stop-color="#c5dfe0" />
@@ -71,18 +75,28 @@ const lampColor = computed(() => {
         <path d="M3 0V12M12 0V12" stroke="#26312d" stroke-opacity=".06" stroke-width="1.5" />
       </pattern>
       <linearGradient id="sofa-back" x1="0" y1="0" x2="0.8" y2="1">
-        <stop offset="0" stop-color="#a6b5a5" />
-        <stop offset="0.65" stop-color="#829889" />
-        <stop offset="1" stop-color="#58756b" />
+        <stop offset="0" stop-color="#9eaf9e" />
+        <stop offset="0.65" stop-color="#7e9684" />
+        <stop offset="1" stop-color="#526e60" />
       </linearGradient>
       <linearGradient id="sofa-seat" x1="0" y1="0" x2="0.4" y2="1">
-        <stop offset="0" stop-color="#9faf9f" />
-        <stop offset="1" stop-color="#6d8879" />
+        <stop offset="0" stop-color="#96aa95" />
+        <stop offset="1" stop-color="#627f6d" />
       </linearGradient>
       <linearGradient id="table-top" x1="0" y1="0" x2="0.7" y2="1">
-        <stop offset="0" stop-color="#a5afa1" />
-        <stop offset="1" stop-color="#6e8176" />
+        <stop offset="0" stop-color="#94a99d" />
+        <stop offset="1" stop-color="#587569" />
       </linearGradient>
+      <radialGradient id="wall-sunlight">
+        <stop offset="0" stop-color="#fff4df" stop-opacity=".48" />
+        <stop offset=".57" stop-color="#fff4df" stop-opacity=".17" />
+        <stop offset="1" stop-color="#fff4df" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="wall-moonlight">
+        <stop offset="0" stop-color="#b9d1d9" stop-opacity=".3" />
+        <stop offset=".6" stop-color="#b9d1d9" stop-opacity=".1" />
+        <stop offset="1" stop-color="#b9d1d9" stop-opacity="0" />
+      </radialGradient>
       <radialGradient id="lamp-halo">
         <stop offset="0" :stop-color="lampColor" stop-opacity=".8" data-testid="lamp-halo-color" />
         <stop offset=".48" :stop-color="lampColor" stop-opacity=".33" />
@@ -105,6 +119,9 @@ const lampColor = computed(() => {
       <clipPath id="window-glass">
         <path d="M575 162Q575 85 650 82Q725 85 725 162V333L575 343Z" />
       </clipPath>
+      <clipPath id="wall-surface">
+        <path d="M0 0H800V309L0 355Z" />
+      </clipPath>
       <mask id="indoor-light-mask" maskUnits="userSpaceOnUse">
         <rect width="800" height="500" fill="#fff" />
         <path d="M561 162Q561 70 650 68Q739 70 739 162V343L561 356Z" fill="#000" />
@@ -119,6 +136,13 @@ const lampColor = computed(() => {
     <g data-testid="day-room" :style="{ opacity: isDay ? 1 : 0 }">
       <rect width="800" height="500" fill="url(#day-wall)" />
       <path d="M0 355 800 309V500H0Z" fill="url(#day-floor)" />
+    </g>
+    <g clip-path="url(#wall-surface)">
+      <rect width="800" height="355" fill="url(#concrete-grain)" :opacity="isDay ? 0.28 : 0.12" />
+      <ellipse cx="665" cy="179" rx="230" ry="206" fill="url(#wall-sunlight)"
+        data-testid="wall-daylight" :style="{ opacity: daylight }" />
+      <ellipse cx="655" cy="183" rx="198" ry="185" fill="url(#wall-moonlight)"
+        data-testid="wall-moonlight" :style="{ opacity: moonlight }" />
     </g>
     <path d="M0 359 800 312" stroke="#6a7467" stroke-opacity=".17" stroke-width="2" />
 
@@ -165,11 +189,11 @@ const lampColor = computed(() => {
     <ellipse cx="389" cy="428" rx="228" ry="32" transform="rotate(-6 389 428)" fill="#d0cbb8" opacity=".1" />
 
     <g class="sofa-scene">
-      <ellipse cx="319" cy="425" rx="181" ry="24" fill="#0b1617" opacity=".34" />
+      <ellipse cx="319" cy="425" rx="181" ry="24" fill="#26352e" opacity=".27" />
       <path d="M162 261Q162 239 184 239H433Q456 239 456 262V365H162Z" fill="url(#sofa-back)" />
       <path d="M174 260Q177 250 187 250H433Q442 250 445 260" stroke="#dfd6bd" stroke-opacity=".31" stroke-width="3" fill="none" />
-      <path d="M181 270Q181 256 194 256H294Q307 256 307 270V336Q304 345 294 345H194Q184 345 181 336Z" fill="#9da69a" />
-      <path d="M315 270Q315 256 328 256H424Q438 256 438 270V336Q435 345 424 345H328Q318 345 315 336Z" fill="#929f92" />
+      <path d="M181 270Q181 256 194 256H294Q307 256 307 270V336Q304 345 294 345H194Q184 345 181 336Z" fill="#8ea28e" />
+      <path d="M315 270Q315 256 328 256H424Q438 256 438 270V336Q435 345 424 345H328Q318 345 315 336Z" fill="#839987" />
       <path d="M189 272Q192 262 202 262H297M324 272Q327 262 337 262H426" stroke="#d6d3bf" stroke-opacity=".2" stroke-width="2" fill="none" />
       <path d="M309 267V341" stroke="#576c62" stroke-opacity=".46" stroke-width="3" />
       <path d="M174 336Q174 326 185 326H306V371Q302 378 293 379H185Q175 378 174 370Z" fill="url(#sofa-seat)" />
@@ -189,7 +213,7 @@ const lampColor = computed(() => {
     <g class="coffee-table">
       <path d="M476 389 481 390 469 441 464 443ZM568 382 574 382 587 430 581 432Z" fill="#394b42" />
       <ellipse cx="520" cy="368" rx="86" ry="24" transform="rotate(-8 520 368)" fill="url(#table-top)" />
-      <ellipse cx="520" cy="364" rx="83" ry="20" transform="rotate(-8 520 364)" fill="#a7b4a3" opacity=".4" />
+      <ellipse cx="520" cy="364" rx="83" ry="20" transform="rotate(-8 520 364)" fill="#bac8b5" opacity=".28" />
       <ellipse cx="472" cy="364" rx="15" ry="6" fill="#34443c" opacity=".56" />
       <ellipse cx="471" cy="362" rx="8" ry="4" fill="#d8cfb6" />
       <path d="M519 348 540 345 544 352 522 355Z" fill="#d4d3c1" opacity=".72" />
@@ -214,6 +238,7 @@ const lampColor = computed(() => {
       <ellipse cx="605" cy="300" rx="92" ry="123" fill="url(#moon-beam)" opacity=".2" />
     </g>
     <g data-testid="lamp-lit-room" mask="url(#indoor-light-mask)" :style="{ opacity: lampPower }">
+      <ellipse cx="475" cy="184" rx="190" ry="158" fill="url(#lamp-halo)" opacity=".52" />
       <ellipse cx="462" cy="255" rx="264" ry="225" fill="url(#lamp-halo)" opacity=".82" data-testid="room-light-wash" />
       <ellipse cx="447" cy="353" rx="152" ry="98" fill="url(#lamp-halo)" opacity=".5" />
       <ellipse cx="500" cy="419" rx="176" ry="75" fill="url(#lamp-halo)" opacity=".32" />
