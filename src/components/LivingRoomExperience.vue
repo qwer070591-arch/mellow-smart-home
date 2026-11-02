@@ -15,13 +15,6 @@ const store = useHomeStore();
 const lamp = computed(() => store.state.lamp);
 const curtainPosition = computed(() => store.state.curtain.position);
 const brightness = computed(() => (lamp.value.on ? lamp.value.brightness : 0));
-const frameGlow = computed(() => {
-  const cool = (lamp.value.colorTemp - 2700) / 3800;
-  const red = Math.round(241 - 69 * cool);
-  const green = Math.round(196 + 26 * cool);
-  const blue = Math.round(130 + 83 * cool);
-  return `rgba(${red}, ${green}, ${blue}, ${(brightness.value / 100 * 0.44).toFixed(3)})`;
-});
 const sceneIcons = {
   home: House,
   movie: Clapperboard,
@@ -37,20 +30,20 @@ const warmthLabel = computed(() =>
 );
 const sceneLabel = computed(
   () =>
-    `客廳預覽：檯燈亮度 ${brightness.value}%，窗簾開度 ${curtainPosition.value}%。`,
+    `客廳預覽：吊燈亮度 ${brightness.value}%，窗簾開度 ${curtainPosition.value}%。`,
 );
 </script>
 
 <template>
   <section class="living-experience" aria-labelledby="living-title">
-    <div class="room-stage" :style="{ '--stage-glow': frameGlow }">
+    <div class="room-stage">
       <div class="stage-heading">
         <div>
           <span>家的片刻 / 01</span>
           <h1 id="living-title">客廳</h1>
         </div>
       </div>
-      <div class="scene-photo-frame" role="img" :aria-label="sceneLabel">
+      <div class="scene-art-frame" role="img" :aria-label="sceneLabel">
         <LivingRoomScene :brightness="brightness" :color-temp="lamp.colorTemp"
           :curtain-position="curtainPosition" />
       </div>
@@ -81,13 +74,13 @@ const sceneLabel = computed(
       <div id="light-control" class="room-control">
         <div class="room-control-heading">
           <span class="room-control-icon"><Lightbulb :size="19" /></span>
-          <div><strong>燈光</strong><small>客廳檯燈</small></div>
+          <div><strong>燈光</strong><small>客廳吊燈</small></div>
           <output for="living-brightness">{{ brightness }}%</output
           ><button
             class="switch"
             type="button"
             role="switch"
-            aria-label="檯燈電源"
+            aria-label="吊燈電源"
             :aria-checked="lamp.on"
             @click="store.setLamp({ on: !lamp.on })"
           >

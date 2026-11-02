@@ -112,47 +112,31 @@ const lampColor = computed(() => {
       <path d="M572 348 731 337" stroke="#b7c2af" stroke-opacity=".28" stroke-width="3" />
     </g>
 
-    <g data-testid="moonlight-spill" :style="{ opacity: moonlight }">
-      <path d="M592 332 718 317 792 474 405 492Z" fill="url(#moon-beam)" />
-      <path d="M507 393 735 339 782 434 552 495Z" fill="#b6c9b8" opacity=".12" />
-    </g>
-
     <path d="M129 387 470 340 684 419 347 489Z" fill="#0e1614" opacity=".47" filter="url(#room-soft-shadow)" />
     <path d="M164 379 464 338 654 419 338 466Z" fill="#6c746b" opacity=".48" />
     <path d="M185 382 469 348 619 416 332 452Z" fill="#b9bbab" opacity=".15" />
     <path d="M183 396 434 366 515 397 270 434Z" fill="#151d1a" opacity=".21" />
 
     <g class="sofa-scene">
-      <path d="M143 367 452 328 503 389 185 430Z" fill="#111916" opacity=".45" />
-      <path d="M143 277Q139 264 154 259L433 218Q450 215 455 228L468 333 160 374Z" fill="url(#sofa-back)" />
-      <path d="M151 267 436 226 449 252 162 294Z" fill="#d7d3bf" opacity=".33" />
-      <path d="M163 299 457 264 472 334 178 374Z" fill="#89978b" opacity=".54" />
-      <path d="M176 343 458 310 502 359 212 397Z" fill="url(#sofa-seat)" />
-      <path d="M183 338 456 306 475 326 199 363Z" fill="#d0cdbc" opacity=".22" />
-      <path d="M212 394 501 357 497 402 211 438Z" fill="#5b6b62" />
-      <path d="M212 397 501 359" stroke="#d5d6c4" stroke-opacity=".25" stroke-width="2" />
-      <path d="M132 318Q128 305 141 300L171 294Q180 294 184 307L195 370Q197 383 183 387L149 387Q137 386 135 374Z" fill="#a7b0a2" />
-      <path d="M137 306 162 302Q171 301 174 313L183 365Q184 374 175 377L145 375Z" fill="#b9bcae" opacity=".52" />
-      <path d="M441 304 466 297Q477 295 483 306L510 350Q518 365 505 373L481 384 458 335Z" fill="#a7b1a4" />
-      <path d="M463 311 482 308 503 351Q509 360 499 365L480 373Z" fill="#c1c8b8" opacity=".3" />
-      <path d="M167 390 173 390 173 419 168 420ZM463 413 469 412 469 437 465 439Z" fill="#202a25" />
-      <path d="M209 293 252 280Q260 279 265 287L282 335Q283 344 275 345L228 352Q218 354 215 346L199 306Q198 298 209 293Z" fill="#bb866a" />
-      <path d="M210 303 251 292 270 334 228 343Z" fill="#e2b797" opacity=".34" />
-      <path d="M365 266 400 260 412 305 372 312Z" fill="#455d62" />
-      <path d="M344 275 363 271 368 311 343 316Z" fill="#d4d2bc" opacity=".4" />
-      <path d="M214 360 247 357 286 394 247 401Z" fill="#b8bba8" opacity=".17" />
-    </g>
-
-    <g data-testid="lamp-lit-room" :style="{ opacity: lampPower }">
-      <ellipse cx="516" cy="166" rx="167" ry="172" fill="url(#lamp-halo)" />
-      <path d="M498 181 538 181 643 420 407 413Z" :fill="lampColor" opacity=".11" />
-    </g>
-    <g class="floor-lamp">
-      <path d="M514 194 520 194 520 354 515 355Z" fill="#b6b6a5" />
-      <ellipse cx="519" cy="358" rx="26" ry="6" fill="#36453d" />
-      <circle cx="517" cy="160" r="35" fill="#9c9b8d" opacity=".56" />
-      <circle cx="517" cy="157" r="31" :fill="lampColor" :opacity="0.22 + lampPower * 0.68" />
-      <path d="M495 178Q517 190 539 178" stroke="#d7d2b5" stroke-opacity=".64" stroke-width="4" fill="none" />
+      <ellipse cx="319" cy="425" rx="181" ry="24" fill="#0b1617" opacity=".34" />
+      <path d="M162 261Q162 239 184 239H433Q456 239 456 262V365H162Z" fill="url(#sofa-back)" />
+      <path d="M174 260Q177 250 187 250H433Q442 250 445 260" stroke="#dfd6bd" stroke-opacity=".31" stroke-width="3" fill="none" />
+      <path d="M181 270Q181 256 194 256H294Q307 256 307 270V336Q304 345 294 345H194Q184 345 181 336Z" fill="#9da69a" />
+      <path d="M315 270Q315 256 328 256H424Q438 256 438 270V336Q435 345 424 345H328Q318 345 315 336Z" fill="#929f92" />
+      <path d="M189 272Q192 262 202 262H297M324 272Q327 262 337 262H426" stroke="#d6d3bf" stroke-opacity=".2" stroke-width="2" fill="none" />
+      <path d="M309 267V341" stroke="#576c62" stroke-opacity=".46" stroke-width="3" />
+      <path d="M174 336Q174 326 185 326H306V371Q302 378 293 379H185Q175 378 174 370Z" fill="url(#sofa-seat)" />
+      <path d="M312 326H436Q449 326 449 337V370Q447 378 437 379H324Q315 378 312 371Z" fill="url(#sofa-seat)" />
+      <path d="M183 341H305M316 341H439" stroke="#d2d2bb" stroke-opacity=".3" stroke-width="2" />
+      <path d="M167 371H452V407Q451 417 440 417H177Q167 417 167 407Z" fill="#526b62" />
+      <path d="M177 381H441" stroke="#c6cbb6" stroke-opacity=".26" stroke-width="2" />
+      <rect x="136" y="307" width="53" height="94" rx="18" fill="#96a69a" />
+      <rect x="432" y="307" width="52" height="94" rx="18" fill="#8fa196" />
+      <path d="M143 327Q146 315 160 315H182M438 315H459Q475 315 477 329" stroke="#d2d3bf" stroke-opacity=".32" stroke-width="3" fill="none" />
+      <path d="M177 416H190V440H181ZM432 416H446L440 439H432Z" fill="#24332f" />
+      <rect x="215" y="281" width="57" height="55" rx="10" transform="rotate(-8 215 281)" fill="#b9876d" />
+      <rect x="222" y="287" width="45" height="43" rx="7" transform="rotate(-8 222 287)" fill="#d9a88b" opacity=".4" />
+      <rect x="355" y="283" width="55" height="52" rx="9" transform="rotate(7 355 283)" fill="#526d71" />
     </g>
 
     <g class="coffee-table">
@@ -170,6 +154,25 @@ const lampColor = computed(() => {
       <path d="M82 395Q71 346 66 299M82 395Q91 345 100 310M83 388Q104 356 119 343" stroke="#738979" stroke-width="3" fill="none" />
       <path d="M66 299Q43 295 46 274Q66 278 66 299ZM75 353Q48 347 48 328Q71 330 75 353ZM95 325Q101 296 120 295Q117 316 95 325ZM108 357Q123 332 141 339Q132 355 108 357Z" fill="#496858" />
       <path d="M65 319Q79 295 92 299Q87 316 65 319ZM87 377Q99 355 115 362Q106 376 87 377Z" fill="#6a8168" />
+    </g>
+    <rect data-testid="room-night-shade" width="800" height="500" fill="#071016"
+      :style="{ opacity: Number(((1 - lampPower) * 0.34).toFixed(3)) }" />
+    <g data-testid="moonlight-spill" :style="{ opacity: moonlight }">
+      <path d="M585 313 720 306 795 484 370 494Z" fill="url(#moon-beam)" />
+      <path d="M520 318 598 315 706 461 403 467Z" fill="#a9c6c8" opacity=".15" />
+    </g>
+    <g data-testid="lamp-lit-room" :style="{ opacity: lampPower }">
+      <rect width="800" height="500" :fill="lampColor" opacity=".12" style="mix-blend-mode: screen" data-testid="room-light-wash" />
+      <ellipse cx="496" cy="225" rx="365" ry="262" fill="url(#lamp-halo)" opacity=".42" />
+      <path d="M460 184 538 184 707 500 270 500Z" :fill="lampColor" opacity=".045" />
+    </g>
+    <g class="pendant-lamp" data-testid="pendant-lamp">
+      <path d="M498 0V125" stroke="#a8b1a7" stroke-width="4" />
+      <path d="M493 123H503V133H493Z" fill="#788984" />
+      <path d="M460 185Q462 145 480 135Q499 124 517 136Q535 148 538 185Z" fill="#a2aaa0" />
+      <path d="M464 182Q467 151 484 141Q501 132 516 142Q531 152 534 182Z" :fill="lampColor" :opacity="0.14 + lampPower * 0.8" />
+      <ellipse cx="499" cy="184" rx="39" ry="7" fill="#c2c4b2" />
+      <ellipse cx="499" cy="185" rx="31" ry="4" :fill="lampColor" :opacity="0.17 + lampPower * 0.8" />
     </g>
     <path d="M0 478Q238 447 426 500H0Z" fill="#131d1a" opacity=".2" />
   </svg>

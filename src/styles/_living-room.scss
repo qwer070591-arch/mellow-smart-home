@@ -2,27 +2,15 @@
   min-width: 0;
 }
 .room-stage {
-  --stage-glow: rgba(241, 196, 130, 0);
   position: relative;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 20px;
   background: #171b20;
   border: 1px solid rgba(220, 243, 255, 0.3);
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.29), 0 0 0 1px var(--stage-glow), 0 0 30px var(--stage-glow), inset 0 1px rgba(255, 255, 255, 0.14);
-  transition: box-shadow 280ms ease;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.29), inset 0 1px rgba(255, 255, 255, 0.14);
 }
-.room-stage::before {
-  content: "";
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 28px var(--stage-glow);
-  pointer-events: none;
-  transition: box-shadow 280ms ease;
-}
-.scene-photo-frame,
+.scene-art-frame,
 .living-room-illustration {
   position: absolute;
   inset: 0;
@@ -33,6 +21,7 @@
   display: block;
 }
 .living-room-illustration [data-testid="lamp-lit-room"],
+.living-room-illustration [data-testid="room-night-shade"],
 .living-room-illustration [data-testid="moonlight-spill"] {
   transition: opacity 300ms ease;
 }
