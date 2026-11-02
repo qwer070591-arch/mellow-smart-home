@@ -8,15 +8,36 @@ const props = defineProps<{
   curtainPosition: number;
 }>();
 
-const lampPower = computed(() => Math.pow(props.brightness / 100, 1.12));
 const curtainOpen = computed(() => props.curtainPosition / 100);
 const panelWidth = computed(() => 9 + 74 * (1 - curtainOpen.value));
 const rightPanelX = computed(() => 731 - panelWidth.value);
-const moonlight = computed(() => props.theme === "dark"
-  ? Number((curtainOpen.value * 0.38).toFixed(3)) : 0);
-const daylight = computed(() => props.theme === "light"
-  ? Number((curtainOpen.value * 0.82).toFixed(3)) : 0);
 const isDay = computed(() => props.theme === "light");
+// 各材質的暗面仍保有本色；窗簾只調整自然採光，不改變吊燈。
+const dayAmbient = computed(() => 0.42 + 0.58 * curtainOpen.value);
+const nightAmbient = computed(() => 0.05 + 0.17 * curtainOpen.value);
+const ambientIntensity = computed(() => isDay.value ? dayAmbient.value : nightAmbient.value);
+const artificialLightIntensity = computed(() => Math.pow(props.brightness / 100, 1.12));
+const sunlightIntensity = computed(() => isDay.value
+  ? Number((curtainOpen.value * 0.82).toFixed(3)) : 0);
+const moonlightIntensity = computed(() => !isDay.value
+  ? Number((curtainOpen.value * 0.38).toFixed(3)) : 0);
+const overallSceneIllumination = computed(() =>
+  ambientIntensity.value + artificialLightIntensity.value * (1 - ambientIntensity.value) * 0.55,
+);
+
+function mixColor(shadow: string, lit: string, intensity: number) {
+  const blend = (channel: number) => Math.round(
+    parseInt(shadow.slice(channel, channel + 2), 16) * (1 - intensity)
+    + parseInt(lit.slice(channel, channel + 2), 16) * intensity,
+  );
+  return `rgb(${blend(1)} ${blend(3)} ${blend(5)})`;
+}
+
+function materialColor(shadow: string, lit: string, lampGain = 0) {
+  const ambient = ambientIntensity.value;
+  const intensity = ambient + artificialLightIntensity.value * lampGain * (1 - ambient);
+  return mixColor(shadow, lit, intensity);
+}
 const lampColor = computed(() => {
   const cool = (props.colorTemp - 2700) / 3800;
   return `rgb(${Math.round(255 - 34 * cool)} ${Math.round(220 + 21 * cool)} ${Math.round(169 + 78 * cool)})`;
@@ -25,25 +46,27 @@ const lampColor = computed(() => {
 
 <template>
   <svg class="living-room-illustration" data-testid="living-room-scene" viewBox="0 0 800 500"
+    :data-ambient-intensity="ambientIntensity.toFixed(3)"
+    :data-overall-illumination="overallSceneIllumination.toFixed(3)"
     preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
     <defs>
       <linearGradient id="room-wall" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#3e4849" />
-        <stop offset="0.56" stop-color="#465355" />
-        <stop offset="1" stop-color="#53656a" />
+        <stop offset="0" :stop-color="mixColor('#202d33', '#59686b', nightAmbient)" />
+        <stop offset="0.56" :stop-color="mixColor('#263338', '#687a7e', nightAmbient)" />
+        <stop offset="1" :stop-color="mixColor('#2a393e', '#708388', nightAmbient)" />
       </linearGradient>
       <linearGradient id="room-floor" x1="0" y1="0" x2="0.8" y2="1">
-        <stop offset="0" stop-color="#303632" />
-        <stop offset="1" stop-color="#1c2423" />
+        <stop offset="0" :stop-color="mixColor('#172225', '#465459', nightAmbient)" />
+        <stop offset="1" :stop-color="mixColor('#1b292a', '#515d5c', nightAmbient)" />
       </linearGradient>
       <linearGradient id="day-wall" x1="0" y1="0" x2="1" y2="0.3">
-        <stop offset="0" stop-color="#cdcac3" />
-        <stop offset=".54" stop-color="#d8d5cd" />
-        <stop offset="1" stop-color="#dcd9d1" />
+        <stop offset="0" :stop-color="mixColor('#3f4747', '#cdcac3', dayAmbient)" />
+        <stop offset=".54" :stop-color="mixColor('#454c4b', '#d8d5cd', dayAmbient)" data-testid="day-wall-center" />
+        <stop offset="1" :stop-color="mixColor('#485252', '#dcd9d1', dayAmbient)" />
       </linearGradient>
       <linearGradient id="day-floor" x1="0" y1="0" x2="0.9" y2="1">
-        <stop offset="0" stop-color="#a9a69e" />
-        <stop offset="1" stop-color="#bbb4a9" />
+        <stop offset="0" :stop-color="mixColor('#303b3b', '#a9a69e', dayAmbient)" data-testid="day-floor-near" />
+        <stop offset="1" :stop-color="mixColor('#3b4240', '#bbb4a9', dayAmbient)" />
       </linearGradient>
       <pattern id="concrete-grain" width="29" height="23" patternUnits="userSpaceOnUse">
         <path d="M4 6h2M19 15h1M25 3h2" stroke="#696d67" stroke-opacity=".1" stroke-width=".6" />
@@ -60,32 +83,32 @@ const lampColor = computed(() => {
         <stop offset="1" stop-color="#536b6b" />
       </linearGradient>
       <linearGradient id="curtain-fabric" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#727c72" />
-        <stop offset="0.19" stop-color="#91998b" />
-        <stop offset="0.43" stop-color="#657368" />
-        <stop offset="0.69" stop-color="#969e90" />
-        <stop offset="1" stop-color="#738075" />
+        <stop offset="0" :stop-color="mixColor('#303f41', '#727c72', nightAmbient)" />
+        <stop offset="0.19" :stop-color="mixColor('#39494a', '#91998b', nightAmbient)" />
+        <stop offset="0.43" :stop-color="mixColor('#2e3d3e', '#657368', nightAmbient)" />
+        <stop offset="0.69" :stop-color="mixColor('#39494a', '#969e90', nightAmbient)" />
+        <stop offset="1" :stop-color="mixColor('#303f41', '#738075', nightAmbient)" />
       </linearGradient>
       <linearGradient id="curtain-fabric-day" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#a8aa9d" />
-        <stop offset=".47" stop-color="#cbcbb9" />
-        <stop offset="1" stop-color="#aeb2a5" />
+        <stop offset="0" :stop-color="mixColor('#59635e', '#a8aa9d', dayAmbient)" />
+        <stop offset=".47" :stop-color="mixColor('#616b63', '#cbcbb9', dayAmbient)" />
+        <stop offset="1" :stop-color="mixColor('#59645e', '#aeb2a5', dayAmbient)" />
       </linearGradient>
       <pattern id="curtain-folds" width="16" height="12" patternUnits="userSpaceOnUse">
         <path d="M3 0V12M12 0V12" stroke="#26312d" stroke-opacity=".06" stroke-width="1.5" />
       </pattern>
       <linearGradient id="sofa-back" x1="0" y1="0" x2="0.8" y2="1">
-        <stop offset="0" stop-color="#9eaf9e" />
-        <stop offset="0.65" stop-color="#7e9684" />
-        <stop offset="1" stop-color="#526e60" />
+        <stop offset="0" :stop-color="materialColor('#253e35', '#9eaf9e', 0.08)" data-testid="sofa-surface-light" />
+        <stop offset="0.65" :stop-color="materialColor('#274237', '#7e9684', 0.42)" />
+        <stop offset="1" :stop-color="materialColor('#21382f', '#526e60', 0.52)" />
       </linearGradient>
       <linearGradient id="sofa-seat" x1="0" y1="0" x2="0.4" y2="1">
-        <stop offset="0" stop-color="#96aa95" />
-        <stop offset="1" stop-color="#627f6d" />
+        <stop offset="0" :stop-color="materialColor('#294238', '#96aa95', 0.48)" />
+        <stop offset="1" :stop-color="materialColor('#243e34', '#627f6d', 0.43)" />
       </linearGradient>
       <linearGradient id="table-top" x1="0" y1="0" x2="0.7" y2="1">
-        <stop offset="0" stop-color="#94a99d" />
-        <stop offset="1" stop-color="#587569" />
+        <stop offset="0" :stop-color="materialColor('#293c37', '#94a99d', 0.72)" data-testid="table-surface-light" />
+        <stop offset="1" :stop-color="materialColor('#233b33', '#587569', 0.65)" />
       </linearGradient>
       <radialGradient id="wall-sunlight">
         <stop offset="0" stop-color="#fff4df" stop-opacity=".48" />
@@ -139,14 +162,14 @@ const lampColor = computed(() => {
     </g>
     <g clip-path="url(#wall-surface)">
       <rect width="800" height="355" fill="url(#concrete-grain)" :opacity="isDay ? 0.28 : 0.12" />
-      <ellipse cx="665" cy="179" rx="230" ry="206" fill="url(#wall-sunlight)"
-        data-testid="wall-daylight" :style="{ opacity: daylight }" />
+      <ellipse cx="665" cy="179" :rx="95 + 135 * curtainOpen" :ry="100 + 106 * curtainOpen" fill="url(#wall-sunlight)"
+        data-testid="wall-daylight" :style="{ opacity: sunlightIntensity }" />
       <ellipse cx="655" cy="183" rx="198" ry="185" fill="url(#wall-moonlight)"
-        data-testid="wall-moonlight" :style="{ opacity: moonlight }" />
+        data-testid="wall-moonlight" :style="{ opacity: moonlightIntensity }" />
     </g>
     <path d="M0 359 800 312" stroke="#6a7467" stroke-opacity=".17" stroke-width="2" />
 
-    <g class="wall-details">
+    <g class="wall-details" :opacity="0.32 + 0.68 * ambientIntensity">
       <path d="M82 99V358M102 96V358M122 94V358M142 92V358" stroke="#a7b09a" stroke-opacity=".12" stroke-width="3" />
       <circle cx="351" cy="143" r="55" fill="#131f22" opacity=".42" />
       <circle cx="351" cy="140" r="49" fill="#526b69" stroke="#a6ad98" stroke-opacity=".62" stroke-width="3" data-testid="wall-art" />
@@ -185,59 +208,57 @@ const lampColor = computed(() => {
     </g>
 
     <ellipse cx="393" cy="439" rx="258" ry="45" transform="rotate(-6 393 439)" fill="#17211d" opacity=".24" filter="url(#room-soft-shadow)" />
-    <ellipse cx="389" cy="432" rx="242" ry="39" transform="rotate(-6 389 432)" fill="#9a9e8e" opacity=".33" />
-    <ellipse cx="389" cy="428" rx="228" ry="32" transform="rotate(-6 389 428)" fill="#d0cbb8" opacity=".1" />
+    <ellipse cx="389" cy="432" rx="242" ry="39" transform="rotate(-6 389 432)" fill="#9a9e8e" :opacity="0.07 + 0.26 * overallSceneIllumination" />
+    <ellipse cx="389" cy="428" rx="228" ry="32" transform="rotate(-6 389 428)" fill="#d0cbb8" :opacity="0.02 + 0.08 * overallSceneIllumination" />
 
     <g class="sofa-scene">
       <ellipse cx="319" cy="425" rx="181" ry="24" fill="#26352e" opacity=".27" />
       <path d="M162 261Q162 239 184 239H433Q456 239 456 262V365H162Z" fill="url(#sofa-back)" />
       <path d="M174 260Q177 250 187 250H433Q442 250 445 260" stroke="#dfd6bd" stroke-opacity=".31" stroke-width="3" fill="none" />
-      <path d="M181 270Q181 256 194 256H294Q307 256 307 270V336Q304 345 294 345H194Q184 345 181 336Z" fill="#8ea28e" />
-      <path d="M315 270Q315 256 328 256H424Q438 256 438 270V336Q435 345 424 345H328Q318 345 315 336Z" fill="#839987" />
+      <path d="M181 270Q181 256 194 256H294Q307 256 307 270V336Q304 345 294 345H194Q184 345 181 336Z" :fill="materialColor('#2b4539', '#8ea28e', 0.08)" />
+      <path d="M315 270Q315 256 328 256H424Q438 256 438 270V336Q435 345 424 345H328Q318 345 315 336Z" :fill="materialColor('#2a4338', '#839987', 0.5)" />
       <path d="M189 272Q192 262 202 262H297M324 272Q327 262 337 262H426" stroke="#d6d3bf" stroke-opacity=".2" stroke-width="2" fill="none" />
       <path d="M309 267V341" stroke="#576c62" stroke-opacity=".46" stroke-width="3" />
       <path d="M174 336Q174 326 185 326H306V371Q302 378 293 379H185Q175 378 174 370Z" fill="url(#sofa-seat)" />
       <path d="M312 326H436Q449 326 449 337V370Q447 378 437 379H324Q315 378 312 371Z" fill="url(#sofa-seat)" />
       <path d="M183 341H305M316 341H439" stroke="#d2d2bb" stroke-opacity=".3" stroke-width="2" />
-      <path d="M167 371H452V407Q451 417 440 417H177Q167 417 167 407Z" fill="#526b62" />
+      <path d="M167 371H452V407Q451 417 440 417H177Q167 417 167 407Z" :fill="materialColor('#20372f', '#526b62', 0.28)" />
       <path d="M177 381H441" stroke="#c6cbb6" stroke-opacity=".26" stroke-width="2" />
-      <rect x="136" y="307" width="53" height="94" rx="18" fill="#96a69a" />
-      <rect x="432" y="307" width="52" height="94" rx="18" fill="#8fa196" />
+      <rect x="136" y="307" width="53" height="94" rx="18" :fill="materialColor('#2d493e', '#96a69a')" />
+      <rect x="432" y="307" width="52" height="94" rx="18" :fill="materialColor('#2d493e', '#8fa196', 0.55)" />
       <path d="M143 327Q146 315 160 315H182M438 315H459Q475 315 477 329" stroke="#d2d3bf" stroke-opacity=".32" stroke-width="3" fill="none" />
       <path d="M177 416H190V440H181ZM432 416H446L440 439H432Z" fill="#24332f" />
-      <rect x="215" y="281" width="57" height="55" rx="10" transform="rotate(-8 215 281)" fill="#b9876d" />
-      <rect x="222" y="287" width="45" height="43" rx="7" transform="rotate(-8 222 287)" fill="#d9a88b" opacity=".4" />
-      <rect x="355" y="283" width="55" height="52" rx="9" transform="rotate(7 355 283)" fill="#526d71" />
+      <rect x="215" y="281" width="57" height="55" rx="10" transform="rotate(-8 215 281)" :fill="materialColor('#563d35', '#b9876d')" />
+      <rect x="222" y="287" width="45" height="43" rx="7" transform="rotate(-8 222 287)" :fill="materialColor('#684c3d', '#d9a88b')" opacity=".4" />
+      <rect x="355" y="283" width="55" height="52" rx="9" transform="rotate(7 355 283)" :fill="materialColor('#24383d', '#526d71', 0.45)" />
     </g>
 
     <g class="coffee-table">
       <path d="M476 389 481 390 469 441 464 443ZM568 382 574 382 587 430 581 432Z" fill="#394b42" />
       <ellipse cx="520" cy="368" rx="86" ry="24" transform="rotate(-8 520 368)" fill="url(#table-top)" />
-      <ellipse cx="520" cy="364" rx="83" ry="20" transform="rotate(-8 520 364)" fill="#bac8b5" opacity=".28" />
+      <ellipse cx="520" cy="364" rx="83" ry="20" transform="rotate(-8 520 364)" fill="#bac8b5" :opacity="0.06 + 0.22 * overallSceneIllumination" />
       <ellipse cx="472" cy="364" rx="15" ry="6" fill="#34443c" opacity=".56" />
-      <ellipse cx="471" cy="362" rx="8" ry="4" fill="#d8cfb6" />
-      <path d="M519 348 540 345 544 352 522 355Z" fill="#d4d3c1" opacity=".72" />
+      <ellipse cx="471" cy="362" rx="8" ry="4" :fill="materialColor('#54574e', '#d8cfb6', 0.75)" />
+      <path d="M519 348 540 345 544 352 522 355Z" :fill="materialColor('#50584e', '#d4d3c1', 0.7)" opacity=".72" />
       <path d="M553 359 576 356 579 362 556 365Z" fill="#344c43" />
     </g>
-    <g class="plant-scene">
+    <g class="plant-scene" :opacity="0.42 + 0.58 * ambientIntensity">
       <path d="M68 395 95 395 91 436 72 436Z" fill="#846c56" />
       <path d="M70 396Q82 401 94 396" stroke="#b89a77" stroke-opacity=".5" fill="none" />
       <path d="M82 395Q71 346 66 299M82 395Q91 345 100 310M83 388Q104 356 119 343" stroke="#738979" stroke-width="3" fill="none" />
       <path d="M66 299Q43 295 46 274Q66 278 66 299ZM75 353Q48 347 48 328Q71 330 75 353ZM95 325Q101 296 120 295Q117 316 95 325ZM108 357Q123 332 141 339Q132 355 108 357Z" fill="#496858" />
       <path d="M65 319Q79 295 92 299Q87 316 65 319ZM87 377Q99 355 115 362Q106 376 87 377Z" fill="#6a8168" />
     </g>
-    <rect data-testid="room-night-shade" width="800" height="500" fill="#071016"
-      :style="{ opacity: isDay ? 0 : 0.28 }" />
-    <g data-testid="daylight-spill" :style="{ opacity: daylight }">
-      <ellipse cx="611" cy="267" rx="192" ry="194" fill="url(#window-bounce)" />
-      <ellipse cx="594" cy="402" rx="260" ry="91" transform="rotate(-17 594 402)" fill="url(#day-beam)" />
-      <ellipse cx="467" cy="345" rx="129" ry="88" fill="url(#window-bounce)" opacity=".45" />
+    <g data-testid="daylight-spill" :style="{ opacity: sunlightIntensity }">
+      <ellipse cx="611" cy="267" :rx="92 + 100 * curtainOpen" :ry="106 + 88 * curtainOpen" fill="url(#window-bounce)" />
+      <ellipse cx="594" cy="402" :rx="105 + 155 * curtainOpen" :ry="48 + 43 * curtainOpen" transform="rotate(-17 594 402)" fill="url(#day-beam)" data-testid="daylight-floor" />
+      <ellipse cx="467" cy="345" :rx="65 + 64 * curtainOpen" :ry="52 + 36 * curtainOpen" fill="url(#window-bounce)" opacity=".45" />
     </g>
-    <g data-testid="moonlight-spill" :style="{ opacity: moonlight }">
+    <g data-testid="moonlight-spill" :style="{ opacity: moonlightIntensity }">
       <ellipse cx="617" cy="408" rx="306" ry="99" transform="rotate(-17 617 408)" fill="url(#moon-beam)" />
       <ellipse cx="605" cy="300" rx="92" ry="123" fill="url(#moon-beam)" opacity=".2" />
     </g>
-    <g data-testid="lamp-lit-room" mask="url(#indoor-light-mask)" :style="{ opacity: lampPower }">
+    <g data-testid="lamp-lit-room" mask="url(#indoor-light-mask)" :style="{ opacity: artificialLightIntensity }">
       <ellipse cx="490" cy="185" rx="145" ry="122" fill="url(#lamp-halo)" opacity=".32" />
       <ellipse cx="485" cy="260" rx="199" ry="160" fill="url(#lamp-halo)" opacity=".48" data-testid="room-light-wash" />
       <ellipse cx="496" cy="259" rx="103" ry="118" fill="url(#lamp-halo)" opacity=".78" />
@@ -245,12 +266,12 @@ const lampColor = computed(() => {
       <ellipse cx="514" cy="382" rx="103" ry="67" fill="url(#lamp-halo)" opacity=".37" />
     </g>
     <g class="pendant-lamp" data-testid="pendant-lamp">
-      <path d="M498 0V125" stroke="#a8b1a7" stroke-width="4" />
-      <path d="M493 123H503V133H493Z" fill="#788984" />
-      <path d="M460 185Q462 145 480 135Q499 124 517 136Q535 148 538 185Z" fill="#a2aaa0" />
-      <path d="M464 182Q467 151 484 141Q501 132 516 142Q531 152 534 182Z" :fill="lampColor" :opacity="lampPower * 0.84" />
-      <ellipse cx="499" cy="184" rx="39" ry="7" fill="#89978d" />
-      <ellipse cx="499" cy="185" rx="31" ry="4" :fill="lampColor" :opacity="lampPower * 0.9" data-testid="pendant-emitter" />
+      <path d="M498 0V125" :stroke="materialColor('#3b4b4c', '#a8b1a7', 0.1)" stroke-width="4" />
+      <path d="M493 123H503V133H493Z" :fill="materialColor('#34494b', '#788984', 0.2)" />
+      <path d="M460 185Q462 145 480 135Q499 124 517 136Q535 148 538 185Z" :fill="materialColor('#3c5050', '#a2aaa0', 0.28)" />
+      <path d="M464 182Q467 151 484 141Q501 132 516 142Q531 152 534 182Z" :fill="lampColor" :opacity="artificialLightIntensity * 0.84" />
+      <ellipse cx="499" cy="184" rx="39" ry="7" :fill="materialColor('#394a47', '#89978d', 0.35)" />
+      <ellipse cx="499" cy="185" rx="31" ry="4" :fill="lampColor" :opacity="artificialLightIntensity * 0.9" data-testid="pendant-emitter" />
     </g>
   </svg>
 </template>

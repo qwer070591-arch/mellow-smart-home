@@ -116,6 +116,84 @@ test("窗簾由中央向左右拉開且不影響室內照明", async ({ page }) 
   }
 });
 
+test("關燈關簾、漸開窗簾與開燈會改變室內材質受光", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const scene = page.getByTestId("living-room-scene");
+  const brightness = page.locator("#living-brightness");
+  const curtain = page.locator("#living-curtain-position");
+  const setRange = async (slider: typeof brightness, value: number) => {
+    await slider.evaluate((input, next) => {
+      (input as HTMLInputElement).value = String(next);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }, value);
+    await expect(slider).toHaveValue(String(value));
+  };
+  const luminance = async (testId: string) => {
+    const color = await page.getByTestId(testId).getAttribute("stop-color");
+    const channels = color?.match(/\d+/g)?.map(Number);
+    expect(channels).toHaveLength(3);
+    return channels![0]! * 0.2126 + channels![1]! * 0.7152 + channels![2]! * 0.0722;
+  };
+
+  await setRange(brightness, 0);
+  const ambientByCurtain: number[] = [];
+  const wallByCurtain: number[] = [];
+  const floorByCurtain: number[] = [];
+  const sofaByCurtain: number[] = [];
+  const tableByCurtain: number[] = [];
+  const lightReachByCurtain: number[] = [];
+  for (const open of [0, 25, 50, 100]) {
+    await setRange(curtain, open);
+    await expect(scene).toHaveAttribute("data-ambient-intensity", (0.42 + 0.58 * open / 100).toFixed(3));
+    ambientByCurtain.push(Number(await scene.getAttribute("data-ambient-intensity")));
+    wallByCurtain.push(await luminance("day-wall-center"));
+    floorByCurtain.push(await luminance("day-floor-near"));
+    sofaByCurtain.push(await luminance("sofa-surface-light"));
+    tableByCurtain.push(await luminance("table-surface-light"));
+    lightReachByCurtain.push(Number(await page.getByTestId("daylight-floor").getAttribute("rx")));
+    await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", String(Number((open * 0.0082).toFixed(3))));
+    await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "0");
+    if (open === 0 || open === 100) {
+      await page.locator(".room-stage").screenshot({ path: `output/playwright/lighting-day-curtain-${open}-off.png`, animations: "disabled" });
+    }
+  }
+  for (const values of [ambientByCurtain, wallByCurtain, floorByCurtain, sofaByCurtain, tableByCurtain, lightReachByCurtain]) {
+    expect(values.every((value, index) => index === 0 || value > values[index - 1]!)).toBe(true);
+  }
+
+  await setRange(curtain, 0);
+  const sofaClosedOff = await luminance("sofa-surface-light");
+  const tableClosedOff = await luminance("table-surface-light");
+  await setRange(brightness, 50);
+  const sofaClosedHalf = await luminance("sofa-surface-light");
+  const tableClosedHalf = await luminance("table-surface-light");
+  await setRange(brightness, 100);
+  expect(await luminance("sofa-surface-light")).toBeGreaterThan(sofaClosedHalf);
+  expect(await luminance("table-surface-light")).toBeGreaterThan(tableClosedHalf);
+  expect(sofaClosedHalf).toBeGreaterThan(sofaClosedOff);
+  expect(tableClosedHalf).toBeGreaterThan(tableClosedOff);
+  await expect(scene).toHaveAttribute("data-ambient-intensity", "0.420");
+  await page.locator(".room-stage").screenshot({ path: "output/playwright/lighting-day-curtain-0-lamp-100.png", animations: "disabled" });
+
+  await setRange(brightness, 0);
+  await page.getByRole("button", { name: "切換至夜晚模式" }).click();
+  await expect(scene).toHaveAttribute("data-ambient-intensity", "0.050");
+  await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0");
+  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0");
+  await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "0");
+  await page.locator(".room-stage").screenshot({ path: "output/playwright/lighting-night-curtain-0-off.png", animations: "disabled" });
+
+  for (const [preset, light, open] of [["回家", 80, 60], ["觀影", 12, 0], ["睡眠", 5, 0], ["離家", 0, 0]] as const) {
+    await page.locator(".scene-presets button").filter({ hasText: preset }).click();
+    await expect(brightness).toHaveValue(String(light));
+    await expect(curtain).toHaveValue(String(open));
+    await expect.poll(async () => Number(await page.getByTestId("lamp-lit-room").evaluate((element) =>
+      getComputedStyle(element).opacity,
+    ))).toBeCloseTo(Math.pow(light / 100, 1.12), 2);
+    await expect(scene).toHaveAttribute("data-ambient-intensity", (0.05 + 0.17 * open / 100).toFixed(3));
+  }
+});
+
 test("客廳場景、室內溫度與趨勢都在裝置控制", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "裝置總覽" })).toHaveCount(0);
   await expect(page.getByText("日照示意")).toHaveCount(0);
@@ -231,7 +309,8 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.keyboard.press("Home");
   await expect(page.locator("#living-brightness")).toHaveValue("0");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "0");
-  await expect(page.getByTestId("room-night-shade")).toHaveCSS("opacity", "0.28");
+  await expect(page.getByTestId("room-night-shade")).toHaveCount(0);
+  await expect(page.getByTestId("living-room-scene")).toHaveAttribute("data-ambient-intensity", "0.152");
   await page.getByRole("switch", { name: "吊燈電源" }).click();
   await expect(page.locator("#living-brightness")).toHaveValue("1");
   await page.locator("#living-color-temp").focus();
@@ -245,7 +324,7 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("End");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "1");
-  await expect(page.getByTestId("room-night-shade")).toHaveCSS("opacity", "0.28");
+  await expect(page.getByTestId("living-room-scene")).toHaveAttribute("data-ambient-intensity", "0.050");
   await expect(page.getByTestId("lamp-halo-color")).toHaveAttribute("stop-color", "rgb(221 241 247)");
   await expect(page.locator(".room-stage")).not.toHaveAttribute("style", /stage-glow/);
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-closed-lit-390.png" });

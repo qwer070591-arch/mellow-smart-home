@@ -21,13 +21,27 @@
   display: block;
 }
 .living-room-illustration [data-testid="lamp-lit-room"],
-.living-room-illustration [data-testid="room-night-shade"],
 .living-room-illustration [data-testid="moonlight-spill"],
 .living-room-illustration [data-testid="daylight-spill"],
 .living-room-illustration [data-testid="wall-daylight"],
 .living-room-illustration [data-testid="wall-moonlight"],
 .living-room-illustration [data-testid="day-room"],
 .living-room-illustration [data-testid="day-window"] {
+  transition: opacity 320ms ease;
+}
+.living-room-illustration stop {
+  transition: stop-color 320ms ease;
+}
+.living-room-illustration .sofa-scene [fill],
+.living-room-illustration .coffee-table [fill],
+.living-room-illustration .pendant-lamp [fill] {
+  transition: fill 320ms ease;
+}
+.living-room-illustration .pendant-lamp [stroke] {
+  transition: stroke 320ms ease;
+}
+.living-room-illustration .wall-details,
+.living-room-illustration .plant-scene {
   transition: opacity 320ms ease;
 }
 .room-stage::after {
