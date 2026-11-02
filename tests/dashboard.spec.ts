@@ -76,17 +76,28 @@ test("窗簾由中央向左右拉開且不影響室內照明", async ({ page }) 
   const slider = page.locator("#living-curtain-position");
   const left = page.getByTestId("curtain-panel-left");
   const right = page.getByTestId("curtain-panel-right");
+  await page.locator("#living-brightness").focus();
+  await page.keyboard.press("Home");
+  await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "0");
   await slider.evaluate((input) => {
     (input as HTMLInputElement).value = "0";
     input.dispatchEvent(new Event("input", { bubbles: true }));
   });
   await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0");
+  await page.locator(".room-stage").screenshot({ path: "output/playwright/curtain-day-0.png", animations: "disabled" });
   await slider.evaluate((input) => {
     (input as HTMLInputElement).value = "100";
     input.dispatchEvent(new Event("input", { bubbles: true }));
   });
   await expect(page.getByTestId("daylight-spill")).not.toHaveCSS("opacity", "0");
   await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0");
+  await page.locator(".room-stage").screenshot({ path: "output/playwright/curtain-day-100.png", animations: "disabled" });
+  await slider.evaluate((input) => {
+    (input as HTMLInputElement).value = "50";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0.41");
+  await page.locator(".room-stage").screenshot({ path: "output/playwright/curtain-day-50.png", animations: "disabled" });
   await page.getByRole("button", { name: "切換至夜晚模式" }).click();
   for (const position of [0, 25, 49, 50, 51, 75, 100]) {
     await slider.evaluate((input, value) => {
@@ -97,7 +108,7 @@ test("窗簾由中央向左右拉開且不影響室內照明", async ({ page }) 
     expect(Number(await left.getAttribute("width"))).toBeCloseTo(curtainWidthAt(position));
     expect(Number(await right.getAttribute("width"))).toBeCloseTo(curtainWidthAt(position));
     expect(Number(await right.getAttribute("x"))).toBeCloseTo(731 - curtainWidthAt(position));
-    const moonlight = Number((position / 100 * (0.55 - 0.4 * Math.pow(0.8, 1.12))).toFixed(3));
+    const moonlight = Number((position / 100 * 0.38).toFixed(3));
     await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", String(moonlight));
     if ([0, 50, 100].includes(position)) {
       await page.locator(".room-stage").screenshot({ path: `output/playwright/curtain-${position}.png` });
@@ -147,6 +158,19 @@ test("場景情境同步設備及溫度，重新整理後保留", async ({ page 
   await expect(page.locator(".toast")).toHaveCount(0);
 });
 
+test("情境切換保留手動日夜主題", async ({ page }) => {
+  await page.getByRole("button", { name: "切換至夜晚模式" }).click();
+  await page.locator(".scene-presets button").filter({ hasText: "觀影" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("#living-brightness")).toHaveValue("12");
+  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0");
+  await page.getByRole("button", { name: "切換至白天模式" }).click();
+  await expect(page.locator("#living-brightness")).toHaveValue("12");
+  await page.locator(".scene-presets button").filter({ hasText: "回家" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0.492");
+});
+
 test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "切換至夜晚模式" }).click();
@@ -167,16 +191,16 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.keyboard.press("End");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "1");
   await expect(page.getByTestId("room-night-shade")).toHaveCSS("opacity", "0");
-  await expect(page.getByTestId("room-light-wash")).toHaveAttribute("fill", "rgb(221 241 247)");
+  await expect(page.getByTestId("lamp-halo-color")).toHaveAttribute("stop-color", "rgb(221 241 247)");
   await expect(page.locator(".room-stage")).not.toHaveAttribute("style", /stage-glow/);
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-closed-lit-390.png" });
   await page.locator("#living-curtain-position").focus();
   await page.keyboard.press("End");
   expect(Number(await page.getByTestId("curtain-panel-left").getAttribute("width"))).toBe(9);
-  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0.15");
+  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0.38");
   await page.locator("#living-brightness").focus();
   await page.keyboard.press("Home");
-  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0.55");
+  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0.38");
   await page.locator(".room-stage").screenshot({ path: "output/playwright/room-open-dark-390.png" });
   await page.keyboard.press("End");
   await expect(page.getByTestId("lamp-lit-room")).toHaveCSS("opacity", "1");
@@ -184,6 +208,68 @@ test("燈光與窗簾滑桿會改變場景並保存", async ({ page }) => {
   await page.reload();
   await expect(page.locator("#living-color-temp")).toHaveValue("6500");
   await expect(page.locator("#living-curtain-position")).toHaveValue("100");
+});
+
+test("日夜與吊燈四種光照在手機及桌機可區分", async ({ page }) => {
+  const brightness = page.locator("#living-brightness");
+  const curtain = page.locator("#living-curtain-position");
+  const setRange = async (selector: typeof brightness, value: number) => {
+    await selector.evaluate((input, next) => {
+      (input as HTMLInputElement).value = String(next);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }, value);
+  };
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    if (await page.locator("html").getAttribute("data-theme") === "dark") {
+      await page.getByRole("button", { name: "切換至白天模式" }).click();
+    }
+    await setRange(curtain, 100);
+    await setRange(brightness, 0);
+    await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0.82");
+    await expect(page.getByTestId("pendant-emitter")).toHaveCSS("opacity", "0");
+    await page.locator(".room-stage").screenshot({ path: `output/playwright/light-day-off-${width}.png`, animations: "disabled" });
+
+    await setRange(brightness, 80);
+    await expect(page.getByTestId("lamp-lit-room")).not.toHaveCSS("opacity", "0");
+    await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0.82");
+    await page.locator(".room-stage").screenshot({ path: `output/playwright/light-day-on-${width}.png`, animations: "disabled" });
+
+    await page.getByRole("button", { name: "切換至夜晚模式" }).click();
+    await setRange(brightness, 0);
+    await expect(page.getByTestId("daylight-spill")).toHaveCSS("opacity", "0");
+    await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0.38");
+    await expect(page.getByTestId("pendant-emitter")).toHaveCSS("opacity", "0");
+    await page.locator(".room-stage").screenshot({ path: `output/playwright/light-night-off-${width}.png`, animations: "disabled" });
+
+    await setRange(brightness, 80);
+    await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0.38");
+    await page.locator(".room-stage").screenshot({ path: `output/playwright/light-night-on-${width}.png`, animations: "disabled" });
+  }
+});
+
+test("亮度連續調整只改變人工光，不改變月光", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "切換至夜晚模式" }).click();
+  const brightness = page.locator("#living-brightness");
+  await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", "0.228");
+  const moonlightBefore = await page.getByTestId("moonlight-spill").evaluate((element) =>
+    getComputedStyle(element).opacity,
+  );
+  for (const value of [0, 25, 50, 75, 100]) {
+    await brightness.evaluate((input, next) => {
+      (input as HTMLInputElement).value = String(next);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }, value);
+    await expect(brightness).toHaveValue(String(value));
+    await expect.poll(async () => Number(await page.getByTestId("lamp-lit-room").evaluate((element) =>
+      getComputedStyle(element).opacity,
+    ))).toBeCloseTo(Math.pow(value / 100, 1.12), 2);
+    await expect(page.getByTestId("moonlight-spill")).toHaveCSS("opacity", moonlightBefore);
+    if (value === 50) {
+      await page.locator(".room-stage").screenshot({ path: "output/playwright/light-night-50-390.png", animations: "disabled" });
+    }
+  }
 });
 
 test("四個情境不跳通知，離家同步關燈與空調", async ({ page }) => {
