@@ -1,0 +1,155 @@
+.control-sheet-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.control-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(10 17 18 / .5);
+}
+
+.control-sheet {
+  position: relative;
+  width: min(500px, 100%);
+  max-height: min(80dvh, 660px);
+  padding: 18px 20px max(22px, env(safe-area-inset-bottom));
+  overflow: auto;
+  border-radius: 25px 25px 0 0;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 -20px 60px rgb(0 0 0 / .18);
+}
+
+.control-sheet__heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.control-sheet__heading h2 {
+  margin-top: 4px;
+  font-size: 25px;
+}
+
+.control-sheet__heading button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface-soft);
+  color: var(--ink);
+}
+
+.control-sheet .device-card {
+  min-height: 340px;
+}
+
+.control-sheet__simple {
+  display: grid;
+  gap: 14px;
+  padding: 15px;
+  border-radius: 15px;
+  background: var(--surface-soft);
+}
+
+.control-sheet__simple p {
+  display: flex;
+  justify-content: space-between;
+}
+
+.control-sheet__simple strong {
+  font-size: 22px;
+}
+
+.control-sheet__simple > button, .control-sheet__quick button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.control-sheet__quick {
+  display: flex;
+  gap: 8px;
+}
+
+.control-sheet__quick button {
+  flex: 1;
+}
+
+.sheet-rise-enter-active, .sheet-rise-leave-active {
+  transition: opacity .23s;
+}
+
+.sheet-rise-enter-active .control-sheet, .sheet-rise-leave-active .control-sheet {
+  transition: transform .23s;
+}
+
+.sheet-rise-enter-from, .sheet-rise-leave-to {
+  opacity: 0;
+}
+
+.sheet-rise-enter-from .control-sheet, .sheet-rise-leave-to .control-sheet {
+  transform: translateY(100%);
+}
+
+.toast, .storage-error {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 80;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 12px;
+}
+
+.storage-error {
+  bottom: 60px;
+}
+
+.switch {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: none;
+}
+
+.switch::before {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 0;
+  width: 44px;
+  height: 26px;
+  border-radius: 99px;
+  background: var(--line);
+}
+
+.switch span {
+  position: absolute;
+  top: 12px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--surface);
+  transition: transform .2s;
+}
+
+.switch[aria-checked="true"]::before {
+  background: var(--sage);
+}
+
+.switch[aria-checked="true"] span {
+  transform: translateX(18px);
+}

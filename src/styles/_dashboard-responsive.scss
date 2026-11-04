@@ -1,0 +1,372 @@
+@media (max-width: 900px) {
+   .living-page {
+    grid-template-columns: 62px minmax(0,1fr);
+  }
+   .dashboard-overview {
+    grid-template-rows: 35px minmax(0,1.5fr) 35px minmax(0,.9fr);
+    gap: 8px;
+  }
+   .dashboard-overview__main {
+    grid-template-columns: minmax(0,1fr) 215px;
+    gap: 9px;
+  }
+   .living-main {
+    padding: 10px;
+  }
+   .device-summary {
+    padding: 12px;
+  }
+   .device-summary__footer {
+    display: none;
+  }
+   .room-viewer__live {
+    display: none;
+  }
+   .room-viewer__chips span {
+    padding: 5px 7px;
+    font-size: 10px;
+  }
+   .device-card {
+    padding: 12px;
+  }
+   .device-card__foot > span:nth-child(2) {
+    display: none;
+  }
+   .vacuum-illustration {
+    width: 100px;
+  }
+}
+
+@media (min-width: 701px) and (max-height: 850px) {
+   .device-summary__footer {
+    display: none;
+  }
+   .device-summary__reading {
+    margin-top: 8px;
+    padding: 6px 8px;
+  }
+   .device-summary__divider {
+    margin: 6px 0;
+  }
+   .device-summary__adjust {
+    margin-top: 4px;
+  }
+}
+
+@media (min-width: 701px) and (max-height: 850px) {
+  .device-summary { padding: 9px 12px; }
+  .device-summary__heading h2 { font-size: 19px; }
+  .device-summary__heading h2 small { display: none; }
+  .device-summary__reading { margin-top: 5px; padding: 5px 8px; }
+  .device-summary__reading > div { margin-top: 3px; }
+  .device-summary__climate { margin-top: 5px; }
+  .device-summary__divider { margin-top: 4px; }
+  .device-summary__curtain { margin-top: 4px; }
+  .device-summary > input[type="range"] { min-height: 20px; margin: 0; }
+  .device-summary__presets button { min-height: 23px; }
+}
+
+@media (min-width: 701px) and (max-width: 900px) and (min-height: 1000px) {
+  .living-page { height: calc(100dvh - 32px); margin: 16px auto; }
+  .dashboard-overview { grid-template-rows: 35px minmax(0, 1.7fr) 28px minmax(0, .8fr); }
+  .dashboard-overview__main { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+  .room-viewer { aspect-ratio: 16 / 9; }
+  .device-summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: 42px 72px 42px;
+    column-gap: 20px;
+    align-content: space-between;
+    padding: 10px 16px;
+  }
+  .device-summary__heading { grid-column: 1; grid-row: 1; }
+  .device-summary__heading h2 small { display: none; }
+  .device-summary__heading h2 { margin-top: 1px; }
+  .device-summary__reading { grid-column: 1; grid-row: 2; margin: 0; }
+  .device-summary__climate { grid-column: 1; grid-row: 3; margin: 0; }
+  .device-summary__divider { display: none; }
+  .device-summary__curtain { grid-column: 2; grid-row: 1; margin: 0; }
+  .device-summary > input[type="range"] { grid-column: 2; grid-row: 2; margin: 0; }
+  .device-summary__presets { grid-column: 2; grid-row: 3; }
+  .dashboard-overview__cards .climate-card__dial { width: min(205px, 28vw); }
+}
+
+@media (max-width: 700px) {
+   .living-page {
+    width: calc(100% - 12px);
+    height: calc(100dvh - 12px);
+    min-height: 0;
+    margin: 6px auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px minmax(0,1fr) 54px;
+    border-radius: 24px;
+  }
+   .dashboard-sidebar {
+    display: none;
+  }
+   .living-header {
+    grid-column: 1;
+    padding: 0 12px;
+  }
+   .living-brand {
+    font-size: 20px;
+  }
+   .living-brand small {
+    margin-left: 7px;
+    font-size: 10px;
+  }
+   .header-clock {
+    gap: 5px;
+  }
+   .header-clock__date {
+    display: none;
+  }
+   .theme-toggle, .alarm-trigger {
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+  }
+   .living-header time {
+    font-size: 12px;
+  }
+   .living-main {
+    grid-column: 1;
+    min-height: 0;
+    padding: 7px 9px 0;
+  }
+   .dashboard-overview {
+    grid-template-rows: 28px auto 58px minmax(0,1fr) 42px;
+    gap: 7px;
+  }
+   .dashboard-overview__top h2 {
+    font-size: 17px;
+  }
+   .dashboard-overview__top .eyebrow {
+    font-size: 8px;
+  }
+   .dashboard-overview__status {
+    font-size: 9px;
+  }
+   .dashboard-overview__main {
+    display: contents;
+  }
+   .room-viewer {
+    grid-row: 2;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+  }
+   .room-viewer__top {
+    top: 7px;
+    left: 7px;
+    right: 7px;
+  }
+   .room-tabs {
+    padding: 4px;
+    gap: 0;
+  }
+   .room-tabs button {
+    min-height: 35px;
+    padding: 4px 7px;
+  }
+   .room-tabs button span {
+    font-size: 11px;
+  }
+   .room-tabs button small {
+    display: none;
+  }
+   .room-viewer__bottom {
+    left: 11px;
+    right: 11px;
+    bottom: 9px;
+  }
+   .room-viewer__bottom h1 {
+    font-size: 25px;
+  }
+   .room-viewer__bottom > div:first-child > span {
+    font-size: 8px;
+  }
+   .room-viewer__chips span {
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+   .room-viewer__chips span:nth-child(2) {
+    display: none;
+  }
+   .device-summary {
+    grid-row: 3;
+    flex-direction: row;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 8px;
+    border-radius: 14px;
+  }
+   .device-summary__heading, .device-summary__reading, .device-summary__adjust, .device-summary__divider, .device-summary > input, .device-summary__presets, .device-summary__footer {
+    display: none;
+  }
+   .device-summary__climate, .device-summary__curtain {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    gap: 5px;
+  }
+   .device-summary__climate > div {
+    gap: 5px;
+  }
+   .device-summary__icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+   .device-summary__climate small, .device-summary__curtain small {
+    font-size: 8px;
+  }
+   .device-summary__climate strong, .device-summary__curtain strong {
+    font-size: 12px;
+  }
+   .device-summary__state {
+    display: none;
+  }
+   .icon-button {
+    min-width: 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+   .device-summary__edit {
+    flex: none;
+    min-width: 42px;
+    width: 42px;
+    height: 34px;
+    border-radius: 8px;
+    font-size: 9px;
+    white-space: nowrap;
+  }
+   .dashboard-overview__section {
+    display: none;
+  }
+   .dashboard-overview__cards {
+    grid-row: 4;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    gap: 6px;
+  }
+   .dashboard-overview__cards .device-card {
+    flex: 1;
+    min-height: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border-radius: 13px;
+  }
+   .dashboard-overview__cards .device-card__top {
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+  }
+   .dashboard-overview__cards .device-card__top h2 {
+    font-size: 14px;
+  }
+   .dashboard-overview__cards .device-card__top .eyebrow {
+    display: none;
+  }
+   .dashboard-overview__cards .device-card__top p {
+    font-size: 9px;
+  }
+   .dashboard-overview__cards .device-card__action {
+    width: 34px;
+    height: 34px;
+  }
+   .dashboard-overview__cards .lighting-card__body {
+    flex: none;
+  }
+   .dashboard-overview__cards .lighting-card__body { height: 112px; }
+   .dashboard-overview__cards .lighting-product { flex: none; width: clamp(72px, 23vw, 96px); height: 112px; }
+   .dashboard-overview__cards .lighting-product img { top: 0; left: 0; width: 100%; height: 100%; transform: none; }
+   .dashboard-overview__cards .lighting-product__glow { bottom: -8%; width: 100%; height: 52%; }
+   .dashboard-overview__cards .lighting-card__level, .dashboard-overview__cards .lighting-card__slider, .dashboard-overview__cards .device-card__foot {
+    display: none;
+  }
+   .dashboard-overview__mobile-actions {
+    grid-row: 5;
+    display: flex;
+    gap: 5px;
+  }
+   .dashboard-overview__mobile-actions button {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--surface-soft);
+    color: var(--ink);
+    font-size: 10px;
+  }
+   .dashboard-overview__mobile-actions button svg {
+    display: block;
+    margin: auto;
+  }
+}
+
+@media (max-width: 380px) {
+   .living-brand small {
+    font-size: 9px;
+    margin-left: 5px;
+  }
+   .room-viewer__chips span:nth-child(3) {
+    display: none;
+  }
+   .device-summary__icon {
+    display: none;
+  }
+}
+
+@media (max-width: 340px) {
+  .dashboard-overview { min-width: 0; grid-template-columns: minmax(0, 1fr); }
+  .dashboard-overview__status { display: none; }
+  .dashboard-overview__cards .lighting-product { width: 54px; }
+  .dashboard-overview__cards .climate-card__dial { width: 82px; }
+  .dashboard-overview__cards .device-card__top p { display: none; }
+  .dashboard-overview__mobile-actions button { font-size: 9px; }
+}
+
+@media (max-width: 700px) and (max-height: 720px) {
+  .room-viewer {
+    aspect-ratio: auto;
+    height: clamp(138px, 24dvh, 170px);
+  }
+  .dashboard-overview__cards .device-card { padding: 5px 8px; }
+  .dashboard-overview__cards .lighting-card__body { height: 48px; }
+  .dashboard-overview__cards .lighting-product { width: 38px; height: 48px; }
+  .dashboard-overview__cards .climate-card__dial { width: 60px; }
+  .dashboard-overview__cards .climate-card__adjust { display: none; }
+}
+
+@media (max-height: 720px) and (min-width: 701px) {
+   .living-page {
+    min-height: 0;
+  }
+   .dashboard-overview {
+    grid-template-rows: 28px minmax(0,1.35fr) 28px minmax(0,1fr);
+    gap: 7px;
+  }
+   .device-summary__footer, .device-summary__adjust, .device-summary__presets {
+    display: none;
+  }
+}
+
+@media (max-height: 650px) and (min-width: 701px) {
+  .device-summary__reading { display: none; }
+  .device-summary { padding: 10px; }
+  .device-card { padding: 10px; }
+  .vacuum-illustration { width: 88px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+   *,*::before,*::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

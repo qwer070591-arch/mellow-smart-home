@@ -1,0 +1,196 @@
+:root {
+  --glass-shell: rgb(255 254 250 / .88);
+  --glass-panel: rgb(255 255 255 / .64);
+  --glass-panel-soft: rgb(244 247 245 / .56);
+  --glass-elevated: rgb(255 255 255 / .82);
+  --glass-stroke: rgb(255 255 255 / .78);
+  --glass-divider: rgb(87 105 99 / .12);
+  --glass-shadow: 0 18px 45px rgb(38 50 48 / .10), inset 0 1px rgb(255 255 255 / .75);
+  --glass-blur: blur(18px) saturate(135%);
+  --glass-active: rgb(84 116 101 / .83);
+  --glass-field: rgb(245 248 245 / .82);
+  --glass-dropdown: rgb(248 250 248 / .97);
+}
+:root[data-theme="dark"] {
+  --glass-shell: rgb(30 42 49 / .88);
+  --glass-panel: rgb(43 59 67 / .70);
+  --glass-panel-soft: rgb(54 71 78 / .58);
+  --glass-elevated: rgb(55 73 80 / .88);
+  --glass-stroke: rgb(213 235 229 / .13);
+  --glass-divider: rgb(218 237 233 / .12);
+  --glass-shadow: 0 19px 50px rgb(2 11 17 / .26), inset 0 1px rgb(255 255 255 / .08);
+  --glass-blur: blur(18px) saturate(120%);
+  --glass-active: rgb(128 168 150 / .78);
+  --glass-field: rgb(50 67 74 / .88);
+  --glass-dropdown: rgb(47 63 70 / .97);
+}
+
+body {
+  background: radial-gradient(circle at 9% 7%, rgb(243 237 224 / .95), transparent 38%),
+    radial-gradient(circle at 88% 85%, rgb(190 211 206 / .65), transparent 42%), var(--page-frame);
+}
+:root[data-theme="dark"] body {
+  background: radial-gradient(circle at 5% 3%, rgb(47 70 77 / .6), transparent 43%),
+    radial-gradient(circle at 85% 91%, rgb(29 53 61 / .74), transparent 40%), var(--page-frame);
+}
+.living-page {
+  border-color: var(--glass-stroke);
+  background: radial-gradient(circle at 82% 14%, rgb(191 215 204 / .16), transparent 48%), var(--glass-shell);
+  box-shadow: 0 27px 85px rgb(33 46 47 / .16), inset 0 1px rgb(255 255 255 / .34);
+  backdrop-filter: blur(24px) saturate(125%);
+}
+.dashboard-sidebar, .living-header, .mobile-global-nav {
+  background: var(--glass-panel-soft);
+  border-color: var(--glass-divider);
+}
+.dashboard-sidebar nav a.is-active {
+  background: var(--glass-elevated);
+  color: var(--sage-dark);
+  box-shadow: 0 5px 13px rgb(36 54 51 / .08), inset 0 1px var(--glass-stroke);
+}
+.dashboard-sidebar nav a:hover { background: var(--glass-elevated); }
+.theme-toggle, .alarm-trigger, .feature-room-selector, .mobile-more-menu {
+  border: 1px solid var(--glass-stroke);
+  background: var(--glass-elevated);
+  box-shadow: 0 6px 18px rgb(33 49 48 / .08), inset 0 1px var(--glass-stroke);
+  backdrop-filter: var(--glass-blur);
+}
+.device-summary, .device-card, .feature-card {
+  border-color: var(--glass-stroke);
+  background: var(--glass-panel);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur);
+}
+.lighting-card { background: color-mix(in srgb, var(--glass-panel) 78%, var(--card-lavender)); }
+.climate-card { background: color-mix(in srgb, var(--glass-panel) 83%, var(--card-pearl)); }
+.feature-card--lavender { background: color-mix(in srgb, var(--glass-panel) 80%, var(--card-lavender)); }
+.device-summary__reading, .preset-grid button, .schedule-list article,
+.track-list button, .environment-readings > div, .mobile-more-menu a {
+  border-color: var(--glass-stroke);
+  background: var(--glass-panel-soft);
+}
+.device-toggle { border-color: var(--glass-stroke); background: var(--glass-panel-soft); }
+.device-toggle[aria-checked="true"] { background: var(--glass-active); }
+.bubble-slider { border-color: var(--glass-stroke); background: var(--glass-panel-soft); }
+.bubble-slider__fill { background: var(--glass-elevated); box-shadow: 2px 3px 12px rgb(35 50 52 / .14), inset 0 1px var(--glass-stroke); }
+.bubble-slider__value { color: var(--ink); }
+.time-sheet-panel, .control-sheet {
+  border-color: var(--glass-stroke);
+  background: var(--glass-elevated);
+  box-shadow: 0 24px 70px rgb(4 16 22 / .24), inset 0 1px var(--glass-stroke);
+  backdrop-filter: blur(22px) saturate(135%);
+}
+.time-sheet-backdrop, .control-sheet-backdrop { background: rgb(13 29 32 / .32); backdrop-filter: blur(4px); }
+.routine-wheel-editor, .control-sheet__simple { background: var(--glass-panel-soft); border-color: var(--glass-stroke); }
+.schedule-form input, .schedule-form select, .settings-form input:not([type="range"]), .settings-form__row select {
+  background: var(--glass-elevated); border-color: var(--glass-stroke);
+}
+.schedule-choice-field { display: grid; gap: 6px; min-width: 0; color: var(--muted); font-size: 12px; }
+.glass-select { position: relative; min-width: 0; }
+.glass-select__trigger {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  width: 100%; min-height: 43px; padding: 9px 12px;
+  border: 1px solid var(--glass-stroke); border-radius: 11px;
+  background: var(--glass-field); color: var(--ink); text-align: left;
+  box-shadow: inset 0 1px var(--glass-stroke);
+}
+.glass-select__trigger svg { flex: none; color: var(--sage-dark); transition: transform .2s ease; }
+.glass-select__trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+.glass-select__trigger:focus-visible, .glass-select__menu button:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
+.glass-select__menu {
+  position: absolute; z-index: 20; top: calc(100% + 5px); left: 0; right: 0;
+  display: grid; gap: 3px; max-height: 220px; overflow-y: auto; padding: 5px;
+  border: 1px solid var(--glass-divider); border-radius: 14px;
+  background: var(--glass-dropdown); box-shadow: 0 15px 36px rgb(24 40 39 / .18), inset 0 1px var(--glass-stroke);
+  backdrop-filter: var(--glass-blur);
+}
+.glass-select__menu button {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  min-height: 38px; padding: 6px 9px; border: 0; border-radius: 9px;
+  background: transparent; color: var(--ink); text-align: left;
+}
+.glass-select__menu button:hover, .glass-select__menu button[aria-selected="true"] { background: var(--glass-panel-soft); }
+.glass-select__menu button svg { color: var(--sage-dark); }
+.mobile-global-nav .is-active { color: var(--sage-dark); }
+
+.dashboard-overview__cards { display: grid; grid-template-columns: minmax(0, 2fr) minmax(170px, 1fr) minmax(0, 2fr); gap: 13px; min-height: 0; }
+.atmosphere-card { display: flex; flex-direction: column; gap: 12px; padding: 15px 12px; background: var(--glass-panel-soft); }
+.atmosphere-card__heading { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.atmosphere-card__mark { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 12px; background: var(--glass-elevated); color: var(--sage-dark); }
+.atmosphere-card h2 { font: 650 clamp(15px, 1.4vw, 19px)/1.1 ui-sans-serif, sans-serif; white-space: nowrap; }
+.atmosphere-card p { margin-top: 3px; color: var(--muted); font-size: 10px; }
+.atmosphere-card__presets { display: grid; grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 6px; flex: 1; min-height: 0; }
+.atmosphere-card__presets button { display: flex; align-items: center; gap: 10px; min-height: 35px; padding: 4px 12px; border: 1px solid var(--glass-stroke); border-radius: 999px; background: var(--glass-elevated); color: var(--ink); text-align: left; font-size: 12px; font-weight: 650; box-shadow: inset 0 1px var(--glass-stroke); transition: transform .22s ease, box-shadow .22s ease, background-color .22s ease; }
+.atmosphere-card__presets button:hover { transform: translateY(-2px); box-shadow: 0 7px 15px rgb(31 53 48 / .12), inset 0 1px var(--glass-stroke); }
+.atmosphere-card__presets button[aria-pressed="true"] { background: var(--glass-active); color: white; border-color: transparent; }
+:root[data-theme="dark"] .atmosphere-card__presets button[aria-pressed="true"] { color: #10231d; }
+.atmosphere-card__open { display: none; }
+
+.schedule-time-field { display: grid; gap: 6px; color: var(--muted); font-size: 12px; }
+.schedule-time-field .routine-time-trigger { width: 100%; justify-content: flex-start; min-height: 43px; background: var(--glass-elevated); border-color: var(--glass-stroke); }
+.schedule-time-field .routine-time-trigger strong { font: 700 20px/1 ui-sans-serif, sans-serif; }
+.schedule-embedded .feature-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 0; }
+.schedule-embedded .feature-card { padding: 15px; border-radius: 18px; }
+.schedule-embedded .feature-card__heading { margin-bottom: 12px; }
+.schedule-embedded .feature-card h2 { font-size: 19px; }
+.schedule-embedded .schedule-form { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.schedule-embedded .schedule-time-field, .schedule-embedded .form-actions, .schedule-embedded .form-error { grid-column: 1 / -1; }
+.schedule-embedded .schedule-list { max-height: 165px; overflow-y: auto; }
+.schedule-embedded .schedule-list article { padding: 10px; }
+.schedule-embedded .feature-empty { padding: 12px; }
+.schedule-embedded .feature-note { margin: 10px 2px; }
+.legacy-routines { margin-top: 12px; border-top: 1px solid var(--glass-divider); }
+.legacy-routines summary { padding: 13px 2px; color: var(--muted); font-size: 12px; cursor: pointer; }
+
+@media (min-width: 701px) {
+  .alarm-sheet-layer { align-items: flex-start; justify-content: flex-end; }
+  .time-sheet-panel.alarm-sheet-panel { position: fixed; top: clamp(72px, 8vh, 98px); right: max(18px, calc((100vw - 1390px) / 2 + 24px)); width: min(450px, calc(100vw - 36px)); max-height: calc(100dvh - 105px); padding: 18px; border: 1px solid var(--glass-stroke); border-radius: 24px; background: var(--glass-elevated); }
+  .alarm-sheet-panel .time-sheet-handle { display: none; }
+  .alarm-sheet-layer.time-sheet-enter-from .time-sheet-panel, .alarm-sheet-layer.time-sheet-leave-to .time-sheet-panel { transform: translateY(-10px) scale(.98); }
+}
+@media (max-width: 1050px) and (min-width: 701px) {
+  .dashboard-overview__cards { grid-template-columns: minmax(0, 2fr) minmax(145px, 1fr) minmax(0, 2fr); gap: 8px; }
+  .atmosphere-card { padding: 11px 8px; gap: 6px; }
+  .atmosphere-card__presets button { padding: 3px 8px; font-size: 11px; }
+}
+@media (max-width: 700px) {
+  .dashboard-overview__cards { display: flex; flex-direction: column; gap: 5px; }
+  .dashboard-overview__cards .lighting-card__body,
+  .dashboard-overview__cards .lighting-product { height: clamp(72px, 10dvh, 96px); }
+  .atmosphere-card.atmosphere-card--compact { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
+  .atmosphere-card--compact .atmosphere-card__presets { display: none; }
+  .atmosphere-card__mark { width: 30px; height: 30px; border-radius: 9px; }
+  .atmosphere-card__heading h2 { font-size: 14px; }
+  .atmosphere-card__open { display: inline-flex; align-items: center; justify-content: center; min-width: 56px; min-height: 38px; border: 1px solid var(--glass-stroke); border-radius: 999px; background: var(--glass-elevated); color: var(--ink); font-size: 11px; }
+  .control-sheet .atmosphere-card { min-height: 310px; }
+  .control-sheet .atmosphere-card__open { display: none; }
+  .time-sheet-panel.alarm-sheet-panel { width: 100%; max-height: min(86dvh, 760px); background: var(--glass-elevated); }
+  .schedule-embedded .schedule-form { grid-template-columns: 1fr 1fr; }
+  .schedule-embedded .schedule-list { max-height: 140px; }
+  .mobile-global-nav { background: var(--glass-elevated); backdrop-filter: var(--glass-blur); }
+  .mobile-more-menu { background: var(--glass-elevated); }
+}
+@media (max-width: 380px) {
+  .atmosphere-card__mark { display: none; }
+}
+@media (max-width: 700px) and (max-height: 720px) {
+  .dashboard-overview__cards .lighting-card__body,
+  .dashboard-overview__cards .lighting-product { height: 48px; }
+}
+@media (min-width: 701px) and (max-height: 650px) {
+  .atmosphere-card { padding-block: 8px; gap: 4px; }
+  .atmosphere-card__presets { gap: 3px; }
+  .atmosphere-card__presets button { min-height: 28px; }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .living-page, .dashboard-sidebar, .living-header, .mobile-global-nav,
+  .device-summary, .device-card, .feature-card,
+  .time-sheet-panel, .control-sheet, .mobile-more-menu {
+    background: var(--surface);
+  }
+  .glass-select__menu { background: var(--surface); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere-card__presets button { transition: none; }
+  .glass-select__trigger svg { transition: none; }
+}

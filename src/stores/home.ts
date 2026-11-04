@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
-import { scenes } from "../data/mock";
+import { initialState, scenes } from "../data/mock";
 import { loadState, saveState } from "../utils/storage";
 import type { RoutineId, SceneId } from "../types";
+import { useDashboardStore } from "./dashboard";
 
 const clamp = (value: number, min: number, max: number) =>
   Math.round(Math.max(min, Math.min(max, value)));
@@ -77,6 +78,7 @@ export const useHomeStore = defineStore("home", () => {
     state.value.climate = { ...scene.climate };
     state.value.extras = { ...scene.extras };
     state.value.activeSceneId = id;
+    useDashboardStore().applyLivingPreset(scene.lamp.brightness, scene.curtain.position, scene.climate.on, scene.climate.target);
     toast.value = "";
     clearTimeout(toastTimer);
   }
@@ -124,6 +126,7 @@ export const useHomeStore = defineStore("home", () => {
       runRoutine(routine.id);
     });
   }
+  function reset() { state.value = structuredClone(initialState); setTheme('light') }
 
   watch(
     state,
@@ -147,5 +150,6 @@ export const useHomeStore = defineStore("home", () => {
     updateRoutine,
     runRoutine,
     checkRoutines,
+    reset,
   };
 });

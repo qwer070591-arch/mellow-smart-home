@@ -3,6 +3,8 @@ import { nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { AlarmClock, X } from "@lucide/vue";
 import { useHomeStore } from "../stores/home";
 import RoutineTimePicker from "./RoutineTimePicker.vue";
+import SchedulesView from '../views/SchedulesView.vue'
+import DeviceToggle from './DeviceToggle.vue'
 import type { RoutineId } from "../types";
 
 const store = useHomeStore();
@@ -25,7 +27,7 @@ function closeAlarm() {
 
 function trapFocus(event: KeyboardEvent) {
   if (event.key !== "Tab" || !panel.value || editingTime.value) return;
-  const focusable = [...panel.value.querySelectorAll<HTMLElement>('button, [tabindex="0"]')];
+  const focusable = [...panel.value.querySelectorAll<HTMLElement>('button, input, select, summary, [tabindex="0"]')].filter(element => element.getClientRects().length);
   const first = focusable[0];
   const last = focusable.at(-1);
   if (!first || !last) return;
@@ -54,7 +56,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <button ref="trigger" class="alarm-trigger" type="button" aria-label="開啟鬧鐘與排程"
+  <button ref="trigger" class="alarm-trigger" type="button" aria-label="開啟排程"
     :aria-expanded="open" @click="open = true">
     <AlarmClock :size="20" aria-hidden="true" />
     <span v-if="store.state.routines.some((routine) => routine.enabled)" class="alarm-active-dot"></span>
@@ -64,14 +66,15 @@ onBeforeUnmount(() => {
       <div v-if="open" class="time-sheet-layer alarm-sheet-layer">
         <div class="time-sheet-backdrop" aria-hidden="true" @click="closeAlarm"></div>
         <section ref="panel" class="time-sheet-panel alarm-sheet-panel" role="dialog"
-          aria-modal="true" aria-label="鬧鐘與排程" :aria-hidden="editingTime || undefined"
+          aria-modal="true" aria-label="排程管理" :aria-hidden="editingTime || undefined"
           tabindex="-1" @keydown.esc.prevent.stop="closeAlarm" @keydown="trapFocus">
           <div class="time-sheet-handle" aria-hidden="true"></div>
           <div class="time-sheet-heading">
-            <div><p>mellow. 智慧生活</p><h2>鬧鐘</h2></div>
-            <button type="button" aria-label="關閉鬧鐘" @click="closeAlarm"><X :size="20" /></button>
+            <div><p>mellow. 智慧生活</p><h2>排程管理</h2></div>
+            <button type="button" aria-label="關閉排程面板" @click="closeAlarm"><X :size="20" /></button>
           </div>
-          <div class="alarm-list">
+          <SchedulesView embedded @time-editing="editingTime = $event" />
+          <details class="legacy-routines"><summary>舊版鬧鐘設定</summary><div class="alarm-list">
             <article v-for="routine in store.state.routines" :key="routine.id" class="alarm-item"
               :class="{ disabled: !routine.enabled }">
               <div class="alarm-item-main">
@@ -80,12 +83,9 @@ onBeforeUnmount(() => {
                   @update:open="editingTime = $event" />
                 <span>{{ details[routine.id].label }}・{{ details[routine.id].action }}</span>
               </div>
-              <button class="switch" type="button" role="switch"
-                :aria-label="`${details[routine.id].label}啟用`" :aria-checked="routine.enabled"
-                @click="store.updateRoutine(routine.id, { enabled: !routine.enabled })"><span></span></button>
+              <DeviceToggle :checked="routine.enabled" :label-on="`停用${details[routine.id].label}`" :label-off="`啟用${details[routine.id].label}`" @toggle="store.updateRoutine(routine.id, { enabled: !routine.enabled })" />
             </article>
-          </div>
-          <p class="alarm-note">排程僅在網頁開啟時執行，不會在背景發出手機鬧鈴。</p>
+          </div></details>
         </section>
       </div>
     </Transition>

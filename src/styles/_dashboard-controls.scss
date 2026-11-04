@@ -1,0 +1,114 @@
+.device-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  width: 76px;
+  height: 40px;
+  padding: 4px;
+  border: 1px solid rgb(80 99 108 / .14);
+  border-radius: 999px;
+  background: #d3d7dd;
+  color: #566369;
+  box-shadow: inset 0 2px 4px rgb(30 40 45 / .10), 0 1px 0 rgb(255 255 255 / .7);
+  transition: background-color .25s ease, box-shadow .25s ease, transform .18s ease;
+}
+.device-toggle:hover { transform: translateY(-1px); }
+.device-toggle:active { transform: scale(.97); }
+.device-toggle[aria-checked="true"] {
+  background: #6d887d;
+  color: white;
+  box-shadow: inset 0 2px 4px rgb(31 57 47 / .2), 0 1px 0 rgb(255 255 255 / .6);
+}
+.device-toggle__thumb {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgb(255 255 255 / .8);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #fff, #eef0ef);
+  box-shadow: 0 3px 7px rgb(26 37 42 / .19), inset 0 1px 2px white;
+  transition: transform .25s cubic-bezier(.2,.7,.2,1);
+}
+.device-toggle[aria-checked="true"] .device-toggle__thumb { transform: translateX(36px); }
+.device-toggle__text {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  pointer-events: none;
+}
+.device-toggle[aria-checked="true"] .device-toggle__text { left: 10px; right: auto; }
+:root[data-theme="dark"] .device-toggle { background: #53616b; color: #e7eef0; border-color: rgb(255 255 255 / .12); }
+:root[data-theme="dark"] .device-toggle[aria-checked="true"] { background: #789b8d; color: #10231d; }
+
+.bubble-slider {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  overflow: hidden;
+  border: 1px solid rgb(74 83 100 / .08);
+  border-radius: 999px;
+  background: #d4d7de;
+  box-shadow: inset 0 2px 4px rgb(42 47 61 / .12), 0 1px 0 rgb(255 255 255 / .65);
+  transition: box-shadow .2s ease;
+}
+.bubble-slider:focus-within { outline: 3px solid var(--sage-dark); outline-offset: 3px; }
+.bubble-slider:has(input:active) { box-shadow: inset 0 2px 6px rgb(42 47 61 / .18), 0 0 0 2px rgb(101 134 122 / .20); }
+.bubble-slider__fill {
+  position: absolute;
+  inset: 3px auto 3px 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(var(--bubble-fill) - 6px);
+  min-width: 45px;
+  padding: 0 14px 0 16px;
+  border-radius: inherit;
+  background: linear-gradient(150deg, #fff, #f6f6f5 64%, #e9eae9);
+  color: #536d61;
+  box-shadow: 2px 2px 7px rgb(55 63 69 / .14), inset 0 1px 1px white;
+  pointer-events: none;
+  transition: width .12s ease-out;
+}
+.bubble-slider__mark { width: 2px; height: 19px; border-radius: 2px; background: #506e61; box-shadow: 1px 0 0 rgb(255 255 255 / .8); }
+.bubble-slider__value {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  color: #263d33;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.bubble-slider input[type="range"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  touch-action: none;
+}
+:root[data-theme="dark"] .bubble-slider { background: #53606e; border-color: rgb(255 255 255 / .09); }
+:root[data-theme="dark"] .bubble-slider__value { color: #f2f5f4; }
+:root[data-theme="dark"] .bubble-slider__fill { background: linear-gradient(145deg, #ecf0ee, #cfdad6); }
+
+@media (max-width: 700px) {
+  .dashboard-overview__cards .device-toggle { width: 59px; height: 32px; padding: 3px; }
+  .dashboard-overview__cards .device-toggle__thumb { width: 24px; height: 24px; }
+  .dashboard-overview__cards .device-toggle[aria-checked="true"] .device-toggle__thumb { transform: translateX(27px); }
+  .dashboard-overview__cards .device-toggle__text { font-size: 8px; right: 5px; }
+  .dashboard-overview__cards .device-toggle[aria-checked="true"] .device-toggle__text { left: 6px; }
+  .control-sheet .bubble-slider { height: 54px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .device-toggle, .device-toggle__thumb, .bubble-slider, .bubble-slider__fill { transition: none; }
+}

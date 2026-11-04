@@ -1,5 +1,5 @@
 @use "./foundation";
-@use "./_living-room.scss";
-@use "./_single-room.scss";
-@use "./_overview.scss";
-@use "./_routines.scss";
+@use "./routines";
+@use "./dashboard";
+@use "./feature-pages";
+@use "./glass";
