@@ -160,16 +160,6 @@
   .room-tabs::before, .room-tabs button { transition: none; }
 }
 
-.room-viewer__live {
-  padding: 9px 11px;
-  border-radius: 99px;
-  background: rgb(255 255 255 / .86);
-  color: #273e36;
-  font-size: 10px;
-  white-space: nowrap;
-  box-shadow: 0 5px 16px rgb(4 15 20 / .12);
-}
-
 .room-viewer__bottom {
   position: absolute;
   left: 20px;

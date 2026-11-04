@@ -101,7 +101,7 @@ const curtainStyle = computed(() => ({
 <template>
   <section class="room-viewer" :class="`room-viewer--${store.state.selectedRoom}`" :style="curtainStyle" aria-label="房間即時預覽">
     <img class="room-viewer__photo room-viewer__lights-off" :src="lightsOffPhotos[store.state.selectedRoom]"
-      :alt="`${store.details.name}的夜間室內示範照片`" width="1599" height="900" decoding="async" />
+      :alt="`${store.details.name}的夜間室內照片`" width="1599" height="900" decoding="async" />
     <img class="room-viewer__photo room-viewer__lights-on" :src="photos[store.state.selectedRoom]"
       alt="" width="1599" height="900" decoding="async" aria-hidden="true" />
     <div class="room-viewer__moonlight" aria-hidden="true"></div>
@@ -141,7 +141,6 @@ const curtainStyle = computed(() => ({
           :aria-selected="store.state.selectedRoom === id" :tabindex="store.state.selectedRoom === id ? 0 : -1"
           @click="store.selectRoom(id)" @keydown="handleRoomTabKeydown($event, id)"><span>{{ roomDetails[id].name }}</span></button>
       </div>
-      <div class="room-viewer__live">● 示範畫面</div>
     </div>
     <div class="room-viewer__bottom">
       <div><h1>{{ store.details.name }}</h1></div>

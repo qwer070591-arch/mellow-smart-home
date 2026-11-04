@@ -1,5 +1,18 @@
 import { test, expect } from '@playwright/test'
 
+test('所有功能頁不顯示示範標記，舊通知文字會更新', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5185/')
+  await page.evaluate(() => {
+    const key = 'mellow-control-center-v1'
+    const state = { notifications: [{ id: 'welcome', message: '智慧生活示範已就緒，設備狀態皆為模擬資料。', createdAt: new Date().toISOString(), read: false }] }
+    localStorage.setItem(key, JSON.stringify(state))
+  })
+  for (const path of ['/', '/climate', '/security', '/notifications', '/schedules', '/settings', '/lighting', '/music']) {
+    await page.goto(`http://127.0.0.1:5185${path}`)
+    await expect(page.locator('body')).not.toContainText(/示範|模擬|demo/i)
+  }
+})
+
 const base = 'http://127.0.0.1:5185'
 
 test('所有側欄功能頁可開啟，桌機與手機沒有水平溢出或腳本錯誤', async ({ page }) => {
@@ -159,9 +172,9 @@ test('玻璃選單支援鍵盤與外部點擊，排程面板回復焦點', async
   await expect(trigger).toBeFocused()
 })
 
-test('安全模式與設定儲存；示範音效能實際播放和停止', async ({ page }) => {
+test('安全模式與設定儲存；音效能實際播放和停止', async ({ page }) => {
   await page.goto(`${base}/security`)
-  await page.getByRole('switch', { name: '解鎖示範門鎖' }).click()
+  await page.getByRole('switch', { name: '解鎖門鎖' }).click()
   await expect(page.getByText('已解鎖', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: '離家', exact: true }).click()
   await expect(page.getByText('已上鎖', { exact: true })).toBeVisible()
@@ -190,7 +203,7 @@ test('手機更多選單可進入全部功能，設定名稱顯示於首頁並�
   await expect(page.getByRole('group', { name: '更多功能' })).toBeVisible()
   await page.getByRole('group', { name: '更多功能' }).getByRole('link', { name: '設定' }).click()
   page.once('dialog', dialog => dialog.accept())
-  await page.getByRole('button', { name: '恢復示範預設值' }).click()
+  await page.getByRole('button', { name: '恢復預設值' }).click()
   await page.goto(base)
   await expect(page.locator('.dashboard-overview__top')).toContainText('我的家')
 })

@@ -33,7 +33,7 @@ const isScene = (value: unknown): value is SceneId => sceneIds.includes(value as
 const actionLabel: Record<ScheduleAction, string> = { lighting: '燈光', curtain: '窗簾', climate: '目標溫度', scene: '氛圍' }
 const defaults = (): CenterState => ({
   name: '我的家', securityMode: 'home', doorLocked: true,
-  notifications: [{ id: 'welcome', message: '智慧生活示範已就緒，設備狀態皆為模擬資料。', createdAt: new Date().toISOString(), read: false }],
+  notifications: [{ id: 'welcome', message: '歡迎使用 mellow.，設定會儲存在此瀏覽器。', createdAt: new Date().toISOString(), read: false }],
   schedules: [], musicVolume: 45,
 })
 
@@ -48,7 +48,10 @@ function load(): CenterState {
     if (typeof data.doorLocked === 'boolean') value.doorLocked = data.doorLocked
     value.musicVolume = number(data.musicVolume, 45, 0, 100)
     if (Array.isArray(data.notifications)) value.notifications = data.notifications.filter((n): n is Notice =>
-      !!n && typeof n.id === 'string' && typeof n.message === 'string' && typeof n.createdAt === 'string' && typeof n.read === 'boolean').slice(0, 40)
+      !!n && typeof n.id === 'string' && typeof n.message === 'string' && typeof n.createdAt === 'string' && typeof n.read === 'boolean').slice(0, 40).map(n => ({
+        ...n,
+        message: n.id === 'welcome' ? '歡迎使用 mellow.，設定會儲存在此瀏覽器。' : n.message.replaceAll('示範門鎖', '門鎖'),
+      }))
     if (Array.isArray(data.schedules)) value.schedules = data.schedules.filter((s): s is Schedule =>
       !!s && typeof s.id === 'string' && isRoom(s.room) && isAction(s.action) &&
       typeof s.time === 'string' && timePattern.test(s.time) && typeof s.value === 'number' &&
@@ -76,11 +79,11 @@ export const useControlCenterStore = defineStore('controlCenter', () => {
   function setSecurityMode(mode: 'home' | 'away') {
     state.value.securityMode = mode
     if (mode === 'away') state.value.doorLocked = true
-    notify(mode === 'away' ? '已切換離家安全模式並鎖上示範門鎖。' : '已切換在家安全模式。')
+    notify(mode === 'away' ? '已切換離家安全模式並鎖上門鎖。' : '已切換在家安全模式。')
   }
   function setDoorLocked(locked: boolean) {
     state.value.doorLocked = locked
-    notify(locked ? '示範門鎖已上鎖。' : '示範門鎖已解鎖。')
+    notify(locked ? '門鎖已上鎖。' : '門鎖已解鎖。')
   }
   function markRead(id: string) { const item = state.value.notifications.find(n => n.id === id); if (item) item.read = true }
   function markAllRead() { state.value.notifications.forEach(n => { n.read = true }) }

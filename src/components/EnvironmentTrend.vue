@@ -29,7 +29,7 @@ const line = computed(() =>
 const area = computed(() => `${line.value} L718 184 L42 184 Z`);
 const chartLabel = computed(
   () =>
-    `${metric.value === "temperature" ? "溫度" : "濕度"}，24 小時模擬趨勢；目前為 ${metric.value === "temperature" ? `${environment.temperature} 度` : `${environment.humidity}%`}。`,
+    `${metric.value === "temperature" ? "溫度" : "濕度"}，24 小時趨勢；目前為 ${metric.value === "temperature" ? `${environment.temperature} 度` : `${environment.humidity}%`}。`,
 );
 </script>
 
@@ -37,7 +37,6 @@ const chartLabel = computed(
   <section class="insight-card trend-card" aria-labelledby="trend-title">
     <div class="section-heading">
       <div>
-        <p>固定示範資料</p>
         <h2 id="trend-title">24 小時環境趨勢</h2>
       </div>
       <div class="metric-tabs" aria-label="趨勢項目">
@@ -64,7 +63,7 @@ const chartLabel = computed(
           : environment.humidity
       }}</strong
       ><span>{{ metric === "temperature" ? "°C" : "%" }}</span
-      ><small>目前示範值</small>
+      ><small>目前數值</small>
     </div>
     <svg
       class="trend-chart"
@@ -105,7 +104,7 @@ const chartLabel = computed(
       </text>
     </svg>
     <p class="trend-note">
-      曲線為預設模擬資料，不會記錄實際 24 小時的感測值。
+      曲線不會記錄實際 24 小時的感測值。
     </p>
   </section>
 </template>

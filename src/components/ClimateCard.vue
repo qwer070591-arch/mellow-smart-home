@@ -67,7 +67,7 @@ function onKeydown(event: KeyboardEvent) {
 <template>
   <section class="device-card climate-card" :class="{ 'climate-card--off': !store.room.climateOn, 'climate-card--compact': compact }" :aria-labelledby="titleId">
     <div class="device-card__top climate-card__top">
-      <div><h2 :id="titleId">室內溫度</h2><p>模擬室溫 {{ store.details.actualTemperature.toFixed(1) }}°C · {{ status }}</p></div>
+      <div><h2 :id="titleId">室內溫度</h2><p>目前室溫 {{ store.details.actualTemperature.toFixed(1) }}°C · {{ status }}</p></div>
       <DeviceToggle :checked="store.room.climateOn" label-on="關閉空調" label-off="開啟空調" @toggle="store.setClimate({ on: !store.room.climateOn })" />
     </div>
     <div class="climate-card__body">
@@ -82,7 +82,7 @@ function onKeydown(event: KeyboardEvent) {
         <div class="climate-card__center" aria-hidden="true"><span>{{ store.room.climateOn ? '目標溫度' : '空調狀態' }}</span><strong>{{ store.room.climateOn ? `${store.room.targetTemperature}°` : 'OFF' }}</strong></div>
         <span class="climate-card__minimum">16°</span><span class="climate-card__maximum">30°</span>
       </div>
-      <div class="climate-card__actual"><span>目前室溫 <small>模擬數據</small></span><strong>{{ store.details.actualTemperature.toFixed(1) }}°C</strong><span>{{ status }}</span></div>
+      <div class="climate-card__actual"><span>目前室溫</span><strong>{{ store.details.actualTemperature.toFixed(1) }}°C</strong><span>{{ status }}</span></div>
     </div>
     <div class="climate-card__adjust">
       <button type="button" aria-label="降低目標溫度" :disabled="!store.room.climateOn || store.room.targetTemperature <= 16" @click="store.setClimate({ target: store.room.targetTemperature - 1 })"><Minus :size="17" /></button>

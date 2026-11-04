@@ -19,9 +19,6 @@
    .device-summary__footer {
     display: none;
   }
-   .room-viewer__live {
-    display: none;
-  }
    .room-viewer__chips span {
     padding: 5px 7px;
     font-size: 10px;
@@ -144,9 +141,6 @@
   }
    .dashboard-overview__top .eyebrow {
     font-size: 8px;
-  }
-   .dashboard-overview__status {
-    font-size: 9px;
   }
    .dashboard-overview__main {
     display: contents;
@@ -324,7 +318,6 @@
 
 @media (max-width: 340px) {
   .dashboard-overview { min-width: 0; grid-template-columns: minmax(0, 1fr); }
-  .dashboard-overview__status { display: none; }
   .dashboard-overview__cards .lighting-product { width: 54px; }
   .dashboard-overview__cards .climate-card__dial { width: 82px; }
   .dashboard-overview__cards .device-card__top p { display: none; }

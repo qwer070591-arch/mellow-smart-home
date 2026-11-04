@@ -179,6 +179,5 @@ const climateStatus = computed(() =>
         <strong>{{ environment.airQuality }}</strong></span
       >
     </div>
-    <p class="mock-note">室溫、濕度與空氣品質為示範數據</p>
   </section>
 </template>

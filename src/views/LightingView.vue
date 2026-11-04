@@ -26,6 +26,5 @@ const icons: Record<SceneId, typeof House> = { home: House, movie: Film, sleep: 
         <section class="feature-card"><div class="feature-card__heading"><div><h2>氛圍控制</h2><p>同步調整燈光、窗簾與空調</p></div></div><div class="preset-grid"><button v-for="id in sceneIds" :key="id" type="button" :aria-pressed="dashboard.activeScene === id" @click="dashboard.applyScene(dashboard.state.selectedRoom, id)"><component :is="icons[id]" :size="18" /><strong>{{ scenePresets[id].label }}</strong><small>{{ scenePresets[id].brightness }}% · 窗簾 {{ scenePresets[id].curtain }}%</small></button></div></section>
       </div>
     </div>
-    <p class="feature-note">示範控制：亮度與窗簾會同步更新房間照片；照片中的光線仍受原始素材限制。</p>
   </div>
 </template>

@@ -200,22 +200,6 @@ body { background: #d9d8d6; }
   letter-spacing: -.04em;
 }
 
-.dashboard-overview__status {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--muted);
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-.dashboard-overview__status > span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #6c9b79;
-}
-
 .dashboard-overview__main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(238px, 24%, 310px);

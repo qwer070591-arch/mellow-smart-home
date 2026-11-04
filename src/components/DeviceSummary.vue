@@ -12,7 +12,7 @@ const humidity = { living: 48, bedroom: 51, kitchen: 45 }
 <template>
   <aside class="device-summary" aria-label="目前房間設備">
     <div class="device-summary__heading"><div><h2>{{ store.details.name }}</h2></div></div>
-    <div class="device-summary__reading"><small>室內環境 <em>模擬數據</em></small><div><span><Thermometer :size="16" /><strong>{{ store.details.actualTemperature.toFixed(1) }}°</strong><small>室溫</small></span><span><Droplets :size="16" /><strong>{{ humidity[store.state.selectedRoom] }}%</strong><small>濕度</small></span></div></div>
+    <div class="device-summary__reading"><small>室內環境</small><div><span><Thermometer :size="16" /><strong>{{ store.details.actualTemperature.toFixed(1) }}°</strong><small>室溫</small></span><span><Droplets :size="16" /><strong>{{ humidity[store.state.selectedRoom] }}%</strong><small>濕度</small></span></div></div>
     <div class="device-summary__climate"><div><span class="device-summary__icon"><Lightbulb :size="19" /></span><span><small>主要裝置狀態</small><strong>燈光 {{ store.room.brightness }}%</strong></span></div><span class="device-summary__state">空調{{ store.room.climateOn ? '運作中' : '已關閉' }}</span></div>
     <div class="device-summary__divider"></div>
     <div class="device-summary__curtain"><span class="device-summary__icon"><Blinds :size="19" /></span><span><small>{{ store.details.curtainName }}</small><strong>開啟 {{ store.room.curtain }}%</strong></span><button type="button" class="device-summary__edit" @click="emit('open', 'curtain')">調整</button></div>

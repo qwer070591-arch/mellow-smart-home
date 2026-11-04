@@ -20,7 +20,7 @@ async function closePanel() { panel.value = null; await nextTick(); opener?.focu
 
 <template>
   <div class="dashboard-overview">
-    <div class="dashboard-overview__top"><div><h2>{{ center.state.name }}</h2></div><span class="dashboard-overview__status"><span></span> 示範設備已就緒</span></div>
+    <div class="dashboard-overview__top"><h2>{{ center.state.name }}</h2></div>
     <div class="dashboard-overview__main"><RoomViewer /><DeviceSummary @open="openPanel" /></div>
     <div class="dashboard-overview__section"><h2>裝置控制</h2></div>
     <div class="dashboard-overview__cards"><LightingCard compact @open="openPanel('lighting')" /><AtmosphereCard compact @open="openPanel('scene')" /><ClimateCard compact /></div>
